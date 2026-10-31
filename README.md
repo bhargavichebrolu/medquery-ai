@@ -5,8 +5,9 @@ A platform for building, evaluating, and comparing Retrieval-Augmented Generatio
 from earlier dissertation research. The architecture is designed to support other
 domains as well.
 
-> **Status: Part 1 (Foundation and Research Migration), milestones 1.1–1.2 complete.**
-> No retrieval, generation, API, or UI code exists yet.
+> **Status: Part 1 (Foundation and Research Migration), milestones 1.1–1.3 complete.**
+> Cleaning and chunking are implemented; no embedding, retrieval, generation, API, or
+> UI code exists yet.
 
 ## Repository layout
 
@@ -16,10 +17,13 @@ medquery-ai/
 ├── backend/                 # Python package `medquery` (uv project)
 │   ├── src/medquery/
 │   │   ├── config.py        # Typed settings (MEDQUERY_* env vars)
-│   │   └── baseline/        # Archive manifest + original-results loader
+│   │   ├── baseline/        # Archive manifest + original-results loader
+│   │   └── ingestion/       # Text loading, cleaning, configurable chunking
 │   ├── scripts/             # build_manifest.py, inspect_legacy_artifacts.py
 │   └── tests/
-├── docs/baseline/           # Provenance, checksum manifest, legacy-artefact report
+├── docs/
+│   ├── baseline/            # Provenance, checksum manifest, legacy-artefact report
+│   └── ingestion/           # Cleaning and chunking strategy + limitations
 └── .env.example
 ```
 
@@ -29,7 +33,10 @@ medquery-ai/
 treated as read-only, and a SHA-256 manifest of all 2,837 files is used to detect any
 change. Original results are never overwritten or mixed with new runs. See
 [docs/baseline/PROVENANCE.md](docs/baseline/PROVENANCE.md) for the pipeline lineage,
-original metrics, evaluation caveats and legacy-file findings.
+original metrics, evaluation caveats and legacy-file findings, and
+[docs/ingestion/CHUNKING.md](docs/ingestion/CHUNKING.md) for the cleaning and
+chunking strategy. The new cleaner and chunker reproduce the archived cleaned text
+(698 files) and chunks (3,796) exactly.
 
 ## Setup
 
@@ -70,7 +77,7 @@ stage.
 
 | Part | Scope | Status |
 |---|---|---|
-| 1 | Foundation and research migration | 1.1–1.2 done; 1.3–1.8 pending |
+| 1 | Foundation and research migration | 1.1–1.3 done; 1.4–1.8 pending |
 | 2 | Core RAG and LLM engine (pgvector, local LLM) | Not started |
 | 3 | Web application | Not started |
 | 4 | Benchmarking and evaluation | Not started |

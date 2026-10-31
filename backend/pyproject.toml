@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Modular RAG pipeline migrated from the NHS Healthcare RAG dissertation research."
 requires-python = ">=3.11"
 dependencies = [
+    "langchain-text-splitters>=0.3",
     "pydantic>=2.7",
     "pydantic-settings>=2.3",
 ]

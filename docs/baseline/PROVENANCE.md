@@ -107,7 +107,7 @@ measured on other hardware.
 - **Reference answers are human-written** (notebook 06, step 35), derived from the
   known relevant NHS articles and not from Llama or retrieval output. They are not
   independently verified.
-- Model revisions, library versions and random seeds were not recorded.
+- Model revisions, most library versions, and random seeds were not recorded (see §9).
 - The `Index_File` column in `faiss_experimental_summary.csv` contains Colab paths.
 
 ## 7. Legacy artefacts
@@ -157,12 +157,59 @@ The new pipeline **does not use them**. They remain in the archive unchanged.
 `data/embeddings/embedding_dimension_comparison.png` is *not* legacy: notebook 04,
 step 25 writes it.
 
-## 8. Results files not yet parsed by the loader
+## 8. Results-file loader coverage
 
-Preserved as-is and covered by the manifest; typed loaders will be added when a
-milestone needs them: `basic_rag_test_results.json`, `llama_rag_test_results.json`,
-`formal_rag_evaluation_data.json`, `formal_rag_evaluation_summary.csv`,
-`ragas_evaluation_dataset.json`, `response_quality_evaluation.csv`,
-`final_chatbot_validation.{csv,json}`, `final_experiment_summary.csv`,
-`final_retrieval_results.csv`, `retrieval_comparison_report_table.csv`, and the PNG
-figures.
+All files are preserved as-is and covered by the manifest. Typed loaders
+(`medquery.baseline.loader`) are added incrementally as milestones need them.
+
+| File | Loader |
+|---|---|
+| `retrieval_model_comparison.csv` | `load_retrieval_summary` |
+| `corrected_retrieval_results.csv` | `load_retrieval_per_question` |
+| `faiss_experimental_summary.csv` | `load_faiss_builds` |
+| `rag_performance_summary.csv` | `load_latency` |
+| `final_retrieval_results.csv` | Not yet (duplicates the retrieval summary plus generator columns) |
+| `retrieval_comparison_report_table.csv` | Not yet (rounded copy of the retrieval summary) |
+| `final_experiment_summary.csv` | Not yet |
+| `basic_rag_test_results.json` | Not yet |
+| `llama_rag_test_results.json` | Not yet |
+| `formal_rag_evaluation_data.json` | Not yet |
+| `formal_rag_evaluation_summary.csv` | Not yet |
+| `response_quality_evaluation.csv` | Not yet |
+| `ragas_evaluation_dataset.json` | Not yet |
+| `final_chatbot_validation.csv` / `.json` | Not yet |
+| `*.png` (6 figures) | Not applicable (images) |
+
+## 9. Historical environment and unknowns
+
+Only values recorded in the notebooks are listed. Anything not recorded is marked
+**Unknown** and must not be reconstructed or guessed.
+
+| Item | Value | Evidence |
+|---|---|---|
+| Runtime | Google Colab | Drive mounts in every notebook |
+| Python | 3.12 (notebook 01 session) | pip output path `/usr/local/lib/python3.12/dist-packages` |
+| beautifulsoup4 / lxml / requests / tqdm | 4.13.5 / 6.1.1 / 2.32.4 / 4.67.3 (notebook 01 session) | pip "Requirement already satisfied" output |
+| Python and package versions in notebooks 02–06 | **Unknown** | Separate sessions; installs used `pip -q` |
+| langchain-text-splitters | **Unknown** | `pip install -q` |
+| sentence-transformers, transformers, torch | **Unknown** | `pip install -q` |
+| faiss-cpu | **Unknown** | `pip install -q` |
+| bitsandbytes, ragas, gradio | **Unknown** | `pip install -q` |
+| Embedding model revisions (commit hashes) | **Unknown** | Loaded by name only |
+| Llama 3.1 8B Instruct / FLAN-T5 revisions | **Unknown** | Loaded by name only |
+| Random seeds | **None set** in any notebook; values **Unknown** | No seeding calls in any notebook |
+| Hardware | Tesla T4, 14.56 GB VRAM (notebook 06 generation session); other sessions **Unknown** | Notebook 06 GPU check output |
+
+Embedding inference and greedy decoding (`do_sample=False`) are deterministic in
+principle, but results may still vary slightly across hardware and library versions.
+
+## 10. Reproduction status
+
+New code is checked against the archive by tests marked `archive`. Newly measured
+values are never written into `Healthcare_RAG/`.
+
+| Stage | Status | Evidence |
+|---|---|---|
+| Cleaning (notebook 02) | Reproduced exactly: 698 / 698 files | `tests/test_ingestion_archive.py` |
+| Chunking (notebook 03) | Reproduced exactly: 698 files, 3,796 chunks, using `langchain-text-splitters` 1.1.3 | `tests/test_ingestion_archive.py` |
+| Embedding, indexing, retrieval evaluation | Not yet attempted (milestones 1.4–1.7) | n/a |
