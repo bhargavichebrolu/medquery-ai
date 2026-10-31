@@ -5,9 +5,9 @@ A platform for building, evaluating, and comparing Retrieval-Augmented Generatio
 from earlier dissertation research. The architecture is designed to support other
 domains as well.
 
-> **Status: Part 1 (Foundation and Research Migration), milestones 1.1–1.4 complete.**
-> Cleaning, chunking, embedding and token analysis are implemented; no vector store,
-> retrieval, generation, API, or UI code exists yet.
+> **Status: Part 1 (Foundation and Research Migration), milestones 1.1–1.5 complete.**
+> Cleaning, chunking, embedding, token analysis and an exact FAISS vector store are
+> implemented; no retriever, metrics, generation, API, or UI code exists yet.
 
 ## Repository layout
 
@@ -19,13 +19,15 @@ medquery-ai/
 │   │   ├── config.py        # Typed settings (MEDQUERY_* env vars)
 │   │   ├── baseline/        # Archive manifest, original-results loader, archived artefacts
 │   │   ├── ingestion/       # Text loading, cleaning, configurable chunking
-│   │   └── embeddings/      # Model specs, compatibility, embedders, token analysis
+│   │   ├── embeddings/      # Model specs, compatibility, embedders, token analysis
+│   │   └── vectorstore/     # VectorStore interface, exact FAISS store, archived indexes
 │   ├── scripts/             # build_manifest, inspect_legacy_artifacts, analyse_embedding_models
 │   └── tests/
 ├── docs/
 │   ├── baseline/            # Provenance, checksum manifest, legacy-artefact report
 │   ├── ingestion/           # Cleaning and chunking strategy + limitations
 │   ├── embeddings/          # Embedding models, token/reproduction reports, hardware
+│   ├── vectorstore/         # Vector store design, guarantees, limitations
 │   └── LIMITATIONS.md       # Tracked limitations register
 └── .env.example
 ```
@@ -91,7 +93,7 @@ stage.
 
 | Part | Scope | Status |
 |---|---|---|
-| 1 | Foundation and research migration | 1.1–1.4 done; 1.5–1.8 pending |
+| 1 | Foundation and research migration | 1.1–1.5 done; 1.6–1.8 pending |
 | 2 | Core RAG and LLM engine (pgvector, local LLM) | Not started |
 | 3 | Web application | Not started |
 | 4 | Benchmarking and evaluation | Not started |

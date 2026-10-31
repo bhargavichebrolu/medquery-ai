@@ -89,6 +89,12 @@ with `Healthcare_RAG/data/faiss/<Model>/faiss_index.bin`:
 exactly** (to float32 rounding) for all four models. That the vectors match suggests
 the weights are unchanged, but it does not prove which revision was used historically.
 
+**Query side.** Querying the archived indexes through the new embedder and vector store
+reproduces notebook 05's recorded top-1 result for *"What are the symptoms of asthma?"*
+(`asthma.txt` chunk 1) and its printed similarity for all four models: MiniLM 0.7398,
+MPNet 0.7600, E5 0.8932, BGE 0.8265 (opt-in test
+`test_query_against_archived_index_reproduces_notebook_05`).
+
 The original Colab timings (MiniLM 420.69 s, MPNet 2,813.16 s, E5 2,852.27 s, BGE
 934.92 s) were measured on different, unrecorded hardware and **are not comparable**
 with the timings above.

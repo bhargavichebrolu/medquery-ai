@@ -74,3 +74,25 @@ def test_e5_query_and_passage_prefixes_change_the_embedding() -> None:
     text = ["What are the symptoms of asthma?"]
     query, passage = embedder.embed_queries(text), embedder.embed_documents(text)
     assert float((query * passage).sum()) < 0.999
+
+
+# Notebook 05, step 11 ("FINAL FAISS RETRIEVAL TEST"): top-1 result for this question
+# with each model, as printed in the saved notebook output (rounded to 4 decimals).
+NOTEBOOK_05_QUESTION = "What are the symptoms of asthma?"
+NOTEBOOK_05_TOP1 = {"MiniLM": 0.7398, "MPNet": 0.7600, "E5": 0.8932, "BGE": 0.8265}
+
+
+@pytest.mark.archive
+@pytest.mark.parametrize("name", list(BASELINE_EMBEDDING_SPECS))
+def test_query_against_archived_index_reproduces_notebook_05(name: str, data_dir: Path) -> None:
+    from medquery.vectorstore import load_archived_store
+
+    embedder = load(name)
+    store = load_archived_store(name, data_dir.parent)
+    [hits] = store.search(
+        embedder.embed_queries([NOTEBOOK_05_QUESTION]),
+        3,
+        query_fingerprint=embedder.fingerprint(),
+    )
+    assert hits[0].chunk.chunk_uid == "asthma.txt#1"
+    assert hits[0].score == pytest.approx(NOTEBOOK_05_TOP1[name], abs=5e-5)

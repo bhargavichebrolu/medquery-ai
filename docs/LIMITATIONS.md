@@ -9,6 +9,7 @@ are never modified to resolve an item; any fix applies to new configurations onl
 | L-002 | Chunk quality: 30 chunks < 50 chars, 16 heading-only, no section context | Open, documented | [CHUNKING.md §5](ingestion/CHUNKING.md) items 2–4 |
 | L-003 | Chunk size measured in characters; token truncation | Measured (1.4): 85/53/17/53 chunks truncated (MiniLM/MPNet/E5/BGE), mostly image-credit URLs | [EMBEDDINGS.md §3](embeddings/EMBEDDINGS.md) |
 | L-004 | Historical library versions, model revisions and seeds unknown | Closed: recorded as Unknown, not reconstructed | [PROVENANCE.md §9](baseline/PROVENANCE.md) |
+| L-005 | Vector store: no document removal/update; source-only filters; exact O(n) search | Open, planned for Part 2 (pgvector) | [VECTOR_STORE.md §5](vectorstore/VECTOR_STORE.md) |
 | L-006 | Scraped image-credit URLs in 176 chunks (77 articles); 63 chunks are >50% URL | Open, documented; baseline unchanged | [EMBEDDINGS.md §3](embeddings/EMBEDDINGS.md) |
 | L-007 | CUDA inference fails on the RTX 4060 dev machine (illegal memory access) | Open, unresolved; CPU used | [EMBEDDINGS.md §6](embeddings/EMBEDDINGS.md) |
 
