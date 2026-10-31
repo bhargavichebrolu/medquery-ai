@@ -1,0 +1,42 @@
+[
+    {
+        "Question": "What are the symptoms of asthma?",
+        "Answer": "• wheezing • coughing • shortness of breath • your chest feeling tight Asthma symptoms can be mild or severe. They usually come and go. They may be worse at night and early in the morning. An asthma attack is when you have severe symptoms and it's difficult to breathe, which can be life-threatening. Symptoms can be triggered by different things, such as allergies, exercise, smoke, cold air or infections. It's not fully understood what causes asthma. You may be more likely to get asthma if: • you have allergies such as eczema, hay fever or food allergies • other people in your family have asthma, hay fever, eczema or allergies • you were born prematurely or had a low birth weight • you were exposed to things like high levels of air",
+        "Top_Source": "asthma.txt",
+        "Top_Similarity": 0.826517641544342,
+        "Retrieval_Time": 0.0891869068145752,
+        "Generation_Time": 48.89050889015198
+    },
+    {
+        "Question": "How is asthma diagnosed?",
+        "Answer": "a GP or nurse will ask you some questions and listen to your chest. You may need a simple breathing test to check for signs of asthma, and sometimes a blood test. You may also be given a handheld device called a peak flow meter to use at home for a few weeks, to check how well your lungs are working. Asthma can take some time to diagnose because the symptoms often vary over time and breathing problems can have different causes. If it's likely you have asthma, you may be offered asthma medicines to see if they help your symptoms.",
+        "Top_Source": "asthma.txt",
+        "Top_Similarity": 0.8506991863250732,
+        "Retrieval_Time": 0.05194354057312012,
+        "Generation_Time": 22.742093801498413
+    },
+    {
+        "Question": "What are the symptoms of a food allergy?",
+        "Answer": "Symptoms of a food allergy include: • feeling dizzy or lightheaded • itchy skin or a raised rash ( hives ) • coughing, wheezing, breathlessness, noisy breathing or a hoarse voice • sneezing or an itchy, runny or blocked nose • feeling sick or being sick • tummy pain • diarrhoea You may get symptoms straight after eating the food you're allergic to, or days later. ## Symptoms of food poisoning Symptoms of food poisoning can start a few minutes, or a few hours, after having food or drink containing lactose. Common symptoms of lactose intolerance include: • tummy pain or discomfort • bloating • farting •",
+        "Top_Source": "food_allergy.txt",
+        "Top_Similarity": 0.8731787204742432,
+        "Retrieval_Time": 0.05884146690368652,
+        "Generation_Time": 31.103381872177124
+    },
+    {
+        "Question": "What is aciclovir used to treat?",
+        "Answer": "Aciclovir is an antiviral medicine used to treat certain infections. Most types are only available with a prescription, but you can buy some types from shops and pharmacies. Aciclovir cream is used to treat cold sores on your lips and face. Some types can also be used to treat genital herpes. It should be applied as soon as you feel itching or tingling. When using aciclovir cream: • wash your hands before and after using it • apply a thin layer of cream to the affected area 5 times a day, leaving 4 hours between each use • stop using the cream and tell your doctor if your cold sore has not healed after using it for 9 days, or after 10 days for genital herpes • do not use the cream inside your mouth or nose, in or near",
+        "Top_Source": "aciclovir_zovirax.txt",
+        "Top_Similarity": 0.8631982803344727,
+        "Retrieval_Time": 0.07948899269104004,
+        "Generation_Time": 39.49000382423401
+    },
+    {
+        "Question": "What should someone do during an asthma attack?",
+        "Answer": "Sit and rest on the floor in a comfortable position, with your knees bent and your back supported. If you cannot do this, you can also sit on a chair. • Take aspirin (300mg) if you have any – do not give aspirin to someone who has an aspirin allergy. • If you have angina, take your glyceryl trinitrate (GTN) spray if you have it with you. • Keep checking someone who may be having a heart attack to make sure they're still responding and breathing. • If someone stops responding to you and stops breathing, start CPR. Find out how to do CPR",
+        "Top_Source": "asthma.txt",
+        "Top_Similarity": 0.8243473768234253,
+        "Retrieval_Time": 0.03839731216430664,
+        "Generation_Time": 26.192702293395996
+    }
+]

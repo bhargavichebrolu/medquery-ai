@@ -1,0 +1,34 @@
+[
+    {
+        "question": "What are the symptoms of asthma?",
+        "answer": "The main symptoms of asthma are:\n\n• wheezing\n• coughing\n• shortness of breath\n• your chest feeling tight\n\nThese symptoms can be mild or severe and may be triggered by different things, such as exercise, high levels of air pollution, cold air, or contact with something you're allergic to.",
+        "top_source": "asthma.txt",
+        "retrieval_time": 0.02855086326599121,
+        "generation_time": 11.619994401931763,
+        "total_time": 11.65714693069458
+    },
+    {
+        "question": "What are the symptoms of a food allergy?",
+        "answer": "Based on the retrieved NHS context, the symptoms of a food allergy include:\n\n• feeling dizzy or lightheaded\n• itchy skin or a raised rash (hives)\n• swelling of the lips, face and eyes (angioedema)\n• coughing, wheezing, breathlessness, noisy breathing or a hoarse voice\n• sneezing or an itchy, runny or blocked nose\n• feeling sick or being sick\n• tummy pain\n• diarrhoea\n\nThese symptoms can occur immediately after eating the food you're allergic to, or days later.",
+        "top_source": "food_allergy.txt",
+        "retrieval_time": 0.017705202102661133,
+        "generation_time": 15.39275074005127,
+        "total_time": 15.415281772613525
+    },
+    {
+        "question": "What is amoxicillin used for?",
+        "answer": "Based on the retrieved NHS context, amoxicillin is used to treat bacterial infections such as:\n\n* Chest infections\n* Dental abscesses\n* Ear infections\n\nIt is a type of penicillin antibiotic, which is a widely used group of antibiotics to treat a variety of infections, including skin infections, chest infections, and urinary tract infections.",
+        "top_source": "amoxicillin.txt",
+        "retrieval_time": 0.028444528579711914,
+        "generation_time": 12.647191286087036,
+        "total_time": 12.683362007141113
+    },
+    {
+        "question": "What is aciclovir used to treat?",
+        "answer": "According to the NHS information, aciclovir is used to treat the following infections:\n\n• cold sores\n• shingles\n• chickenpox\n• genital herpes\n• herpes simplex eye infections\n\nIt is also sometimes used to prevent these infections in people with a weakened immune system.",
+        "top_source": "aciclovir_zovirax.txt",
+        "retrieval_time": 0.02640080451965332,
+        "generation_time": 7.863766431808472,
+        "total_time": 7.904582738876343
+    }
+]

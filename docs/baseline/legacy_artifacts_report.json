@@ -1,0 +1,110 @@
+{
+  "top_level_faiss": {
+    "files": {
+      "faiss_index.bin": "cc649c72b8e4bb7208e93ab167cc6c8316d65ef77f7a1d9473a5106df438f438",
+      "metadata.json": "329d9d01e812d6e98e0aae7007ed130c1e1e2f2c48c4a706399e66d3975f7930"
+    },
+    "index_type": "IndexFlatIP",
+    "dimension": 384,
+    "ntotal": 3796,
+    "metadata_records": 3796,
+    "metadata_fields": [
+      "chunk_id",
+      "chunk_length",
+      "source_file",
+      "text"
+    ],
+    "vector_norms": {
+      "min": 1.0,
+      "mean": 1.0
+    },
+    "comparisons": {
+      "MiniLM": {
+        "dimension": 384,
+        "metadata_identical_order": true,
+        "metadata_identical_text": true,
+        "row_aligned_cosine": {
+          "min": 0.000937,
+          "mean": 0.206555
+        },
+        "max_abs_difference": 0.55665828
+      },
+      "MPNet": {
+        "dimension": 768,
+        "metadata_identical_order": true,
+        "metadata_identical_text": true,
+        "row_aligned_cosine": "not comparable (different shape)"
+      },
+      "E5": {
+        "dimension": 768,
+        "metadata_identical_order": true,
+        "metadata_identical_text": true,
+        "row_aligned_cosine": "not comparable (different shape)"
+      },
+      "BGE": {
+        "dimension": 384,
+        "metadata_identical_order": true,
+        "metadata_identical_text": true,
+        "row_aligned_cosine": {
+          "min": 1.0,
+          "mean": 1.0
+        },
+        "max_abs_difference": 2.4e-07
+      }
+    }
+  },
+  "per_article_embeddings": {
+    "file_count": 699,
+    "files_not_matching_an_article": {
+      "all_embeddings.json": 3796
+    },
+    "record_count": 7592,
+    "unique_keys": 3796,
+    "field_sets": [
+      [
+        "chunk_id",
+        "chunk_length",
+        "embedding",
+        "source_file",
+        "text"
+      ]
+    ],
+    "records_with_embedding": 7592,
+    "embedding_dimensions": [
+      384
+    ],
+    "other_model_identifier_fields": [],
+    "comparisons": {
+      "MiniLM": {
+        "rows_compared": 7592,
+        "keys_found": 7592,
+        "row_aligned_cosine": {
+          "min": 0.000937,
+          "mean": 0.206555
+        }
+      },
+      "MPNet": {
+        "rows_compared": 7592,
+        "keys_found": 7592,
+        "row_aligned_cosine": "not comparable (different dimension or no shared keys)"
+      },
+      "E5": {
+        "rows_compared": 7592,
+        "keys_found": 7592,
+        "row_aligned_cosine": "not comparable (different dimension or no shared keys)"
+      },
+      "BGE": {
+        "rows_compared": 7592,
+        "keys_found": 7592,
+        "row_aligned_cosine": {
+          "min": 1.0,
+          "mean": 1.0
+        }
+      }
+    },
+    "vector_norms": {
+      "min": 1.0,
+      "mean": 1.0
+    }
+  }
+}

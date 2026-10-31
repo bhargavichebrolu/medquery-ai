@@ -1,0 +1,78 @@
+question_id,question,answer,retrieval_time_seconds,generation_time_seconds,total_time_seconds
+1,What are the symptoms of asthma?,"The main symptoms of asthma are:
+
+• wheezing
+• coughing
+• shortness of breath
+• your chest feeling tight
+
+These symptoms can be mild or severe and may be triggered by different things, such as exercise, high levels of air pollution, cold air, or contact with something you're allergic to.",0.01629185676574707,7.569873332977295,7.593324899673462
+2,What are the causes of asthma?,"Based on the retrieved NHS context, the causes of asthma include:
+
+* Allergies such as eczema, hay fever, or food allergies
+* Family history of asthma, hay fever, eczema, or allergies
+* Premature birth or low birth weight
+* Exposure to high levels of air pollution or cigarette smoke as a child
+* Childhood illnesses that affect breathing, such as bronchiolitis or croup
+* Being overweight
+* Breathing in substances such as certain chemicals at work
+
+Note: The exact causes of asthma are not fully understood, and these factors may increase the likelihood of developing asthma.",0.01587200164794922,12.990341186523438,13.01290774345398
+3,How is asthma diagnosed?,"Based on the retrieved NHS context, asthma is diagnosed by:
+
+1. A GP or nurse asking questions and listening to your chest.
+2. A simple breathing test to check for signs of asthma.
+3. A blood test.
+4. Using a handheld device called a peak flow meter at home for a few weeks to check how well your lungs are working.
+
+Note: Asthma can take some time to diagnose because the symptoms often vary over time and breathing problems can have different causes.",0.015199899673461914,9.940614223480225,9.961258172988892
+4,What is aciclovir used to treat?,"According to the NHS information, aciclovir is used to treat the following infections:
+
+• cold sores
+• shingles
+• chickenpox
+• genital herpes
+• herpes simplex eye infections
+
+It is also sometimes used to prevent these infections in people with a weakened immune system.",0.023653745651245117,6.897053241729736,6.930440187454224
+5,What are the symptoms of a food allergy?,"Based on the retrieved NHS context, the symptoms of a food allergy include:
+
+• feeling dizzy or lightheaded
+• itchy skin or a raised rash (hives)
+• swelling of the lips, face and eyes (angioedema)
+• coughing, wheezing, breathlessness, noisy breathing or a hoarse voice
+• sneezing or an itchy, runny or blocked nose
+• feeling sick or being sick
+• tummy pain
+• diarrhoea
+
+These symptoms can occur immediately after eating the food you're allergic to, or days later.",0.01647329330444336,12.547605752944946,12.570106744766235
+6,What are the symptoms of hives?,"According to the NHS information, the symptoms of hives are:
+
+* An itchy rash
+* Raised bumps or patches in many shapes and sizes
+* The rash can appear anywhere on the body
+* The rash can be on 1 area or spread across the body
+* The rash can feel itchy, sting, or burn
+* The colour of the rash can be pink or red when affecting someone with white skin, and may be harder to see on brown and black skin.",0.016576766967773438,10.54760456085205,10.569867134094238
+7,What is amoxicillin used for?,"Based on the retrieved NHS context, amoxicillin is used to treat bacterial infections such as:
+
+* Chest infections
+* Dental abscesses
+* Ear infections
+
+It is a type of penicillin antibiotic, which is a widely used group of antibiotics to treat a variety of infections, including skin infections, chest infections, and urinary tract infections.",0.015198469161987305,7.524306535720825,7.545137643814087
+8,What is amlodipine used to treat?,"Amlodipine is used to treat:
+
+• high blood pressure (hypertension), reducing the risk of serious problems like heart attacks and stroke
+• prevent angina attacks in people with angina",0.026714086532592773,5.34824800491333,5.381915807723999
+9,What is allopurinol used to treat?,"Based on the retrieved NHS context, allopurinol is used to treat gout.",0.02592611312866211,3.153017282485962,3.187195062637329
+10,What is adalimumab used to treat?,"Based on the retrieved NHS context, adalimumab is used to treat the following conditions:
+
+• Crohn's disease
+• Hidradenitis suppurativa (HS)
+• Psoriasis
+• Psoriatic arthritis
+• Rheumatoid arthritis
+• Ulcerative colitis
+• Uveitis",0.016325712203979492,11.870938539505005,11.89468502998352

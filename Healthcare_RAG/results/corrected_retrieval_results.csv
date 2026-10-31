@@ -1,0 +1,41 @@
+model,question_id,question,precision_at_5,recall_at_5,mrr,ndcg_at_5
+MiniLM,1,What are the symptoms of asthma?,0.2,1.0,1.0,1.0
+MiniLM,2,What are the causes of asthma?,0.2,1.0,1.0,1.0
+MiniLM,3,How is asthma diagnosed?,0.2,1.0,1.0,1.0
+MiniLM,4,What is aciclovir used to treat?,0.2,1.0,1.0,1.0
+MiniLM,5,What are the symptoms of a food allergy?,0.2,1.0,1.0,1.0
+MiniLM,6,What are the symptoms of hives?,0.2,1.0,0.5,0.6309297535714575
+MiniLM,7,What is amoxicillin used for?,0.0,0.0,0.0,0.0
+MiniLM,8,What is amlodipine used to treat?,0.2,1.0,1.0,1.0
+MiniLM,9,What is allopurinol used to treat?,0.2,1.0,0.5,0.6309297535714575
+MiniLM,10,What is adalimumab used to treat?,0.2,1.0,1.0,1.0
+MPNet,1,What are the symptoms of asthma?,0.2,1.0,1.0,1.0
+MPNet,2,What are the causes of asthma?,0.2,1.0,1.0,1.0
+MPNet,3,How is asthma diagnosed?,0.2,1.0,1.0,1.0
+MPNet,4,What is aciclovir used to treat?,0.2,1.0,1.0,1.0
+MPNet,5,What are the symptoms of a food allergy?,0.2,1.0,1.0,1.0
+MPNet,6,What are the symptoms of hives?,0.2,1.0,0.5,0.6309297535714575
+MPNet,7,What is amoxicillin used for?,0.2,1.0,1.0,1.0
+MPNet,8,What is amlodipine used to treat?,0.2,1.0,1.0,1.0
+MPNet,9,What is allopurinol used to treat?,0.2,1.0,1.0,1.0
+MPNet,10,What is adalimumab used to treat?,0.2,1.0,1.0,1.0
+E5,1,What are the symptoms of asthma?,0.2,1.0,1.0,1.0
+E5,2,What are the causes of asthma?,0.2,1.0,1.0,1.0
+E5,3,How is asthma diagnosed?,0.2,1.0,1.0,1.0
+E5,4,What is aciclovir used to treat?,0.2,1.0,1.0,1.0
+E5,5,What are the symptoms of a food allergy?,0.2,1.0,1.0,1.0
+E5,6,What are the symptoms of hives?,0.2,1.0,0.5,0.6309297535714575
+E5,7,What is amoxicillin used for?,0.2,1.0,0.5,0.6309297535714575
+E5,8,What is amlodipine used to treat?,0.2,1.0,1.0,1.0
+E5,9,What is allopurinol used to treat?,0.2,1.0,1.0,1.0
+E5,10,What is adalimumab used to treat?,0.2,1.0,1.0,1.0
+BGE,1,What are the symptoms of asthma?,0.2,1.0,1.0,1.0
+BGE,2,What are the causes of asthma?,0.2,1.0,1.0,1.0
+BGE,3,How is asthma diagnosed?,0.2,1.0,1.0,1.0
+BGE,4,What is aciclovir used to treat?,0.2,1.0,1.0,1.0
+BGE,5,What are the symptoms of a food allergy?,0.2,1.0,1.0,1.0
+BGE,6,What are the symptoms of hives?,0.2,1.0,0.5,0.6309297535714575
+BGE,7,What is amoxicillin used for?,0.2,1.0,0.5,0.6309297535714575
+BGE,8,What is amlodipine used to treat?,0.2,1.0,1.0,1.0
+BGE,9,What is allopurinol used to treat?,0.2,1.0,1.0,1.0
+BGE,10,What is adalimumab used to treat?,0.2,1.0,1.0,1.0

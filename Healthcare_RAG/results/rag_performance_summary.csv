@@ -1,0 +1,4 @@
+Metric,Mean (seconds),Std Dev (seconds),Minimum (seconds),Maximum (seconds)
+Retrieval Time,0.01952,0.0033455775120132683,0.0154,0.0252
+Generation Time,10.69818,4.737264346246916,3.5401,18.9132
+Total Response Time,10.72467,4.738193891265133,3.562,18.9433

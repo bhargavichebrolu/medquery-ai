@@ -1,0 +1,7 @@
+Item,Value
+Best Retrieval Model,MPNet
+Generator,Llama 3.1 8B Instruct
+Top-K,5
+Mean Retrieval Time (s),0.0195
+Mean Generation Time (s),10.6982
+Mean Total Response Time (s),10.7247

@@ -1,0 +1,78 @@
+Question ID,Question,Generated Answer,Retrieved Sources,Retrieval Time (s),Generation Time (s),Total Time (s)
+1,What are the symptoms of asthma?,"The main symptoms of asthma are:
+
+• wheezing
+• coughing
+• shortness of breath
+• your chest feeling tight
+
+These symptoms can be mild or severe and may be triggered by different things, such as exercise, high levels of air pollution, cold air, or contact with something you're allergic to.","asthma.txt, asthma.txt, asthma.txt, asthma.txt, asthma.txt",0.0252,11.5023,11.5364
+2,What are the causes of asthma?,"Based on the retrieved NHS context, the causes of asthma include:
+
+* Allergies such as eczema, hay fever, or food allergies
+* Family history of asthma, hay fever, eczema, or allergies
+* Premature birth or low birth weight
+* Exposure to high levels of air pollution or cigarette smoke as a child
+* Childhood illnesses that affect breathing, such as bronchiolitis or croup
+* Being overweight
+* Breathing in substances such as certain chemicals at work
+
+Note: The exact causes of asthma are not fully understood, and these factors may increase the likelihood of developing asthma.","asthma.txt, asthma.txt, asthma.txt, non-allergic_rhinitis.txt, asthma.txt",0.0154,15.137,15.1585
+3,How is asthma diagnosed?,"Based on the retrieved NHS context, asthma is diagnosed by:
+
+1. A GP or nurse asking questions and listening to your chest.
+2. A simple breathing test to check for signs of asthma.
+3. A blood test.
+4. Using a handheld device called a peak flow meter at home for a few weeks to check how well your lungs are working.
+
+Note: Asthma can take some time to diagnose because the symptoms often vary over time and breathing problems can have different causes.","asthma.txt, asthma.txt, asthma.txt, asthma.txt, sarcoidosis.txt",0.0225,12.06,12.091
+4,What is aciclovir used to treat?,"According to the NHS information, aciclovir is used to treat the following infections:
+
+• cold sores
+• shingles
+• chickenpox
+• genital herpes
+• herpes simplex eye infections
+
+It is also sometimes used to prevent these infections in people with a weakened immune system.","aciclovir_zovirax.txt, aciclovir_zovirax.txt, co-amoxiclav-common_brands_augmentin.txt, aciclovir_zovirax.txt, aciclovir_zovirax.txt",0.0224,8.7995,8.8305
+5,What are the symptoms of a food allergy?,"Based on the retrieved NHS context, the symptoms of a food allergy include:
+
+• feeling dizzy or lightheaded
+• itchy skin or a raised rash (hives)
+• swelling of the lips, face and eyes (angioedema)
+• coughing, wheezing, breathlessness, noisy breathing or a hoarse voice
+• sneezing or an itchy, runny or blocked nose
+• feeling sick or being sick
+• tummy pain
+• diarrhoea
+
+These symptoms can occur immediately after eating the food you're allergic to, or days later.","food_allergy.txt, food_allergy.txt, food_allergy.txt, food_allergy.txt, food_allergy.txt",0.0222,18.9132,18.9433
+6,What are the symptoms of hives?,"According to the NHS information, the symptoms of hives are:
+
+* An itchy rash
+* Raised bumps or patches in many shapes and sizes
+* The rash can appear anywhere on the body
+* The rash can be on 1 area or spread across the body
+* The rash can feel itchy, sting, or burn
+* The colour of the rash can be pink or red when affecting someone with white skin, and may be harder to see on brown and black skin.","rashes_in_babies_and_children.txt, hives.txt, hives.txt, hives.txt, rashes_in_babies_and_children.txt",0.0161,15.0539,15.0759
+7,What is amoxicillin used for?,"Based on the retrieved NHS context, amoxicillin is used to treat bacterial infections such as:
+
+* Chest infections
+* Dental abscesses
+* Ear infections
+
+It is a type of penicillin antibiotic, which is a widely used group of antibiotics to treat a variety of infections, including skin infections, chest infections, and urinary tract infections.","amoxicillin.txt, co-amoxiclav-common_brands_augmentin.txt, overview-antibiotics.txt, overview-antibiotics.txt, overview-antibiotics.txt",0.0175,7.9977,8.0211
+8,What is amlodipine used to treat?,"Amlodipine is used to treat:
+
+• high blood pressure (hypertension), reducing the risk of serious problems like heart attacks and stroke
+• prevent angina attacks in people with angina","amlodipine.txt, amlodipine.txt, felodipine-common_brands_cardioplen_delofine_vascalpha.txt, amlodipine.txt, trazodone.txt",0.0196,5.6361,5.6628
+9,What is allopurinol used to treat?,"Based on the retrieved NHS context, allopurinol is used to treat gout.","allopurinol-zyloric_uricto.txt, propranolol-brand_names_bedranol_beta-prograne_half_beta-prograne.txt, fexofenadine-brand_names_allevia_almerg_histallay_telfast_treathay.txt, dapagliflozin-common_brand_forxiga.txt, spironolactone.txt",0.0169,3.5401,3.562
+10,What is adalimumab used to treat?,"Based on the retrieved NHS context, adalimumab is used to treat the following conditions:
+
+• Crohn's disease
+• Hidradenitis suppurativa (HS)
+• Psoriasis
+• Psoriatic arthritis
+• Rheumatoid arthritis
+• Ulcerative colitis
+• Uveitis","adalimumab.txt, dapagliflozin-common_brand_forxiga.txt, aciclovir_zovirax.txt, apixaban.txt, semaglutide-common_brands_wegovy_ozempic_rybelsus.txt",0.0174,8.342,8.3652

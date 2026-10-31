@@ -1,0 +1,5 @@
+Model,Vectors,Dimension,Index_Type,Build_Time_Seconds,Index_File
+MiniLM,3796,384,IndexFlatIP,0.0049,/content/drive/MyDrive/Healthcare_RAG/data/faiss/MiniLM/faiss_index.bin
+MPNet,3796,768,IndexFlatIP,0.0054,/content/drive/MyDrive/Healthcare_RAG/data/faiss/MPNet/faiss_index.bin
+E5,3796,768,IndexFlatIP,0.0071,/content/drive/MyDrive/Healthcare_RAG/data/faiss/E5/faiss_index.bin
+BGE,3796,384,IndexFlatIP,0.0029,/content/drive/MyDrive/Healthcare_RAG/data/faiss/BGE/faiss_index.bin

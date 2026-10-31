@@ -1,0 +1,37 @@
+question,answer,top_source,retrieval_time,generation_time,total_time
+What are the symptoms of asthma?,"The main symptoms of asthma are:
+
+• wheezing
+• coughing
+• shortness of breath
+• your chest feeling tight
+
+These symptoms can be mild or severe and may be triggered by different things, such as exercise, high levels of air pollution, cold air, or contact with something you're allergic to.",asthma.txt,0.02855086326599121,11.619994401931763,11.65714693069458
+What are the symptoms of a food allergy?,"Based on the retrieved NHS context, the symptoms of a food allergy include:
+
+• feeling dizzy or lightheaded
+• itchy skin or a raised rash (hives)
+• swelling of the lips, face and eyes (angioedema)
+• coughing, wheezing, breathlessness, noisy breathing or a hoarse voice
+• sneezing or an itchy, runny or blocked nose
+• feeling sick or being sick
+• tummy pain
+• diarrhoea
+
+These symptoms can occur immediately after eating the food you're allergic to, or days later.",food_allergy.txt,0.017705202102661133,15.39275074005127,15.415281772613525
+What is amoxicillin used for?,"Based on the retrieved NHS context, amoxicillin is used to treat bacterial infections such as:
+
+* Chest infections
+* Dental abscesses
+* Ear infections
+
+It is a type of penicillin antibiotic, which is a widely used group of antibiotics to treat a variety of infections, including skin infections, chest infections, and urinary tract infections.",amoxicillin.txt,0.028444528579711914,12.647191286087036,12.683362007141113
+What is aciclovir used to treat?,"According to the NHS information, aciclovir is used to treat the following infections:
+
+• cold sores
+• shingles
+• chickenpox
+• genital herpes
+• herpes simplex eye infections
+
+It is also sometimes used to prevent these infections in people with a weakened immune system.",aciclovir_zovirax.txt,0.02640080451965332,7.863766431808472,7.904582738876343

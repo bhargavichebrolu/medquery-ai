@@ -1,0 +1,128 @@
+[
+    {
+        "question": "What are the symptoms of asthma?",
+        "answer": "Based on the retrieved NHS context, the symptoms of asthma are:\n\n• wheezing\n• coughing\n• shortness of breath\n• your chest feeling tight\n\nThese symptoms can be mild or severe and may be triggered by different things, such as exercise, high levels of air pollution, cold air, or contact with something you're allergic to, such as pollen, dust, mould, or animals.",
+        "sources": [
+            {
+                "rank": 1,
+                "source_file": "asthma.txt",
+                "chunk_id": 1,
+                "similarity": 0.8265177011489868
+            },
+            {
+                "rank": 2,
+                "source_file": "asthma.txt",
+                "chunk_id": 12,
+                "similarity": 0.8026978969573975
+            },
+            {
+                "rank": 3,
+                "source_file": "asthma.txt",
+                "chunk_id": 10,
+                "similarity": 0.7476198673248291
+            },
+            {
+                "rank": 4,
+                "source_file": "hives.txt",
+                "chunk_id": 13,
+                "similarity": 0.7466700077056885
+            },
+            {
+                "rank": 5,
+                "source_file": "food_allergy.txt",
+                "chunk_id": 2,
+                "similarity": 0.7466700077056885
+            }
+        ],
+        "retrieval_time_seconds": 0.011604547500610352,
+        "generation_time_seconds": 8.047812461853027,
+        "total_time_seconds": 8.059417009353638,
+        "embedding_model": "BGE",
+        "generator_model": "meta-llama/Llama-3.1-8B-Instruct",
+        "top_k": 5
+    },
+    {
+        "question": "What is aciclovir used to treat?",
+        "answer": "According to the NHS information, aciclovir is used to treat the following infections:\n\n1. Cold sores\n2. Shingles\n3. Chickenpox\n4. Genital herpes\n5. Herpes simplex eye infections",
+        "sources": [
+            {
+                "rank": 1,
+                "source_file": "aciclovir_zovirax.txt",
+                "chunk_id": 1,
+                "similarity": 0.8631983995437622
+            },
+            {
+                "rank": 2,
+                "source_file": "aciclovir_zovirax.txt",
+                "chunk_id": 3,
+                "similarity": 0.8378653526306152
+            },
+            {
+                "rank": 3,
+                "source_file": "aciclovir_zovirax.txt",
+                "chunk_id": 13,
+                "similarity": 0.7919270992279053
+            },
+            {
+                "rank": 4,
+                "source_file": "aciclovir_zovirax.txt",
+                "chunk_id": 11,
+                "similarity": 0.7516411542892456
+            },
+            {
+                "rank": 5,
+                "source_file": "aciclovir_zovirax.txt",
+                "chunk_id": 4,
+                "similarity": 0.7448712587356567
+            }
+        ],
+        "retrieval_time_seconds": 0.018895387649536133,
+        "generation_time_seconds": 5.40017557144165,
+        "total_time_seconds": 5.4190709590911865,
+        "embedding_model": "BGE",
+        "generator_model": "meta-llama/Llama-3.1-8B-Instruct",
+        "top_k": 5
+    },
+    {
+        "question": "What are the symptoms of a food allergy?",
+        "answer": "Based on the retrieved NHS context, the symptoms of a food allergy include:\n\n• feeling dizzy or lightheaded\n• itchy skin or a raised rash (hives)\n• swelling of the lips, face and eyes (angioedema)\n• coughing, wheezing, breathlessness, noisy breathing or a hoarse voice\n• sneezing or an itchy, runny or blocked nose\n• feeling sick or being sick\n• tummy pain\n• diarrhoea\n\nThese symptoms can occur immediately after eating the food you're allergic to, or days later.",
+        "sources": [
+            {
+                "rank": 1,
+                "source_file": "food_allergy.txt",
+                "chunk_id": 1,
+                "similarity": 0.8731787204742432
+            },
+            {
+                "rank": 2,
+                "source_file": "food_allergy.txt",
+                "chunk_id": 5,
+                "similarity": 0.8104453086853027
+            },
+            {
+                "rank": 3,
+                "source_file": "food_poisoning.txt",
+                "chunk_id": 1,
+                "similarity": 0.7650554180145264
+            },
+            {
+                "rank": 4,
+                "source_file": "lactose_intolerance.txt",
+                "chunk_id": 2,
+                "similarity": 0.7639940977096558
+            },
+            {
+                "rank": 5,
+                "source_file": "food_allergy.txt",
+                "chunk_id": 7,
+                "similarity": 0.7552931308746338
+            }
+        ],
+        "retrieval_time_seconds": 0.011751890182495117,
+        "generation_time_seconds": 10.85781979560852,
+        "total_time_seconds": 10.869571685791016,
+        "embedding_model": "BGE",
+        "generator_model": "meta-llama/Llama-3.1-8B-Instruct",
+        "top_k": 5
+    }
+]

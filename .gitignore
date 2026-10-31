@@ -1,0 +1,45 @@
+# --- Secrets and local configuration ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.huggingface/
+hf_token*
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+build/
+dist/
+
+# --- Model weights and caches ---
+/models/
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.onnx
+*.gguf
+
+# --- Datasets and generated artefacts ---
+# The research archive's data folder (raw/cleaned/chunks/embeddings/FAISS,
+# ~470 MB) is never committed. Notebooks and the small results files are
+# tracked so the dissertation baseline stays reviewable.
+/Healthcare_RAG/data/
+/data/
+/experiments/runs/
+
+# --- Editors / OS ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
