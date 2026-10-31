@@ -7,8 +7,10 @@ are never modified to resolve an item; any fix applies to new configurations onl
 |---|---|---|---|
 | L-001 | NHS source URLs are not linked to articles | Open, under investigation | Below |
 | L-002 | Chunk quality: 30 chunks < 50 chars, 16 heading-only, no section context | Open, documented | [CHUNKING.md §5](ingestion/CHUNKING.md) items 2–4 |
-| L-003 | Chunk size measured in characters; possible token truncation (MiniLM: 256) | Open, to be measured in milestone 1.4 | [CHUNKING.md §5](ingestion/CHUNKING.md) item 1 |
+| L-003 | Chunk size measured in characters; token truncation | Measured (1.4): 85/53/17/53 chunks truncated (MiniLM/MPNet/E5/BGE), mostly image-credit URLs | [EMBEDDINGS.md §3](embeddings/EMBEDDINGS.md) |
 | L-004 | Historical library versions, model revisions and seeds unknown | Closed: recorded as Unknown, not reconstructed | [PROVENANCE.md §9](baseline/PROVENANCE.md) |
+| L-006 | Scraped image-credit URLs in 176 chunks (77 articles); 63 chunks are >50% URL | Open, documented; baseline unchanged | [EMBEDDINGS.md §3](embeddings/EMBEDDINGS.md) |
+| L-007 | CUDA inference fails on the RTX 4060 dev machine (illegal memory access) | Open, unresolved; CPU used | [EMBEDDINGS.md §6](embeddings/EMBEDDINGS.md) |
 
 ## L-001: Missing source URLs
 

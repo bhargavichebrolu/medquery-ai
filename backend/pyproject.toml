@@ -5,8 +5,11 @@ description = "Modular RAG pipeline migrated from the NHS Healthcare RAG dissert
 requires-python = ">=3.11"
 dependencies = [
     "langchain-text-splitters>=0.3",
+    "numpy>=1.26",
     "pydantic>=2.7",
     "pydantic-settings>=2.3",
+    "sentence-transformers>=3.0",
+    "torch>=2.11.0",
 ]
 
 [dependency-groups]
@@ -14,6 +17,15 @@ dev = [
     "pytest>=8.0",
     "ruff>=0.5",
 ]
+
+# CUDA build of PyTorch on Windows (local RTX GPU). Other platforms use PyPI wheels.
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cu128", marker = "sys_platform == 'win32'" }]
 
 [build-system]
 requires = ["hatchling"]
@@ -27,6 +39,7 @@ testpaths = ["tests"]
 addopts = "-ra"
 markers = [
     "archive: requires the local Healthcare_RAG research archive (skipped when absent)",
+    "models: loads real embedding models from the local Hugging Face cache; opt-in via MEDQUERY_RUN_MODEL_TESTS=1, never downloads",
 ]
 
 [tool.ruff]

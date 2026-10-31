@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Literal
 
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -29,6 +30,7 @@ class Settings(BaseSettings):
     docs_dir: Path = PROJECT_ROOT / "docs"
     experiments_dir: Path = PROJECT_ROOT / "experiments"
     log_level: str = "INFO"
+    embedding_device: Literal["auto", "cpu", "cuda"] = "auto"
 
     @field_validator("archive_dir", "docs_dir", "experiments_dir", mode="after")
     @classmethod
