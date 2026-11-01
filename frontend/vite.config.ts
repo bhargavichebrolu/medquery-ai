@@ -4,6 +4,13 @@ import { defineConfig } from 'vitest/config'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  server: {
+    // During development, forward every request starting with /api to the Python
+    // backend, so the browser talks to one address and needs no CORS setup.
+    proxy: {
+      '/api': 'http://127.0.0.1:8000',
+    },
+  },
   test: {
     // jsdom gives tests a simulated browser page to render components into.
     environment: 'jsdom',

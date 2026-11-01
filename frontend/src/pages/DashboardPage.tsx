@@ -1,4 +1,5 @@
 import { Link } from 'react-router'
+import BackendStatus from '../components/BackendStatus'
 import StatCard from '../components/StatCard'
 import { DATASET_FACTS } from '../data/researchDataset'
 import { NAV_ITEMS, PAGES } from '../navigation'
@@ -37,6 +38,15 @@ function DashboardPage() {
             <StatCard key={fact.label} {...fact} />
           ))}
         </div>
+      </section>
+
+      <section className="dashboard-section" aria-labelledby="backend-heading">
+        <h2 id="backend-heading">Backend connection</h2>
+        <p className="section-note">
+          The Python backend counts the research dataset itself and is checked against the
+          verified figures above.
+        </p>
+        <BackendStatus />
       </section>
 
       <section className="dashboard-section" aria-labelledby="model-heading">

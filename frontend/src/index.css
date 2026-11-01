@@ -937,6 +937,52 @@ h3.placeholder-label {
   margin-top: 16px;
 }
 
+/* ---------- Backend connection ---------- */
+
+.backend-panel {
+  gap: 8px;
+}
+
+.status-line {
+  font-weight: 700;
+  color: var(--text-strong);
+}
+
+.live-counts strong {
+  color: var(--text-strong);
+}
+
+.check-ok {
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.check-warning {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px dashed var(--text);
+  border-radius: 6px;
+  color: var(--text-strong);
+}
+
+.command {
+  max-width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 10px 12px;
+  overflow-x: auto;
+  border-radius: 6px;
+  background: var(--bg);
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 0.8rem;
+  color: var(--text-strong);
+}
+
+.backend-panel .button-secondary {
+  margin-top: 4px;
+}
+
 @media (max-width: 560px) {
   .config-list {
     grid-template-columns: 1fr;
