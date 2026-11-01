@@ -3,11 +3,13 @@ import { matchPath } from 'react-router'
 // One description per page. The sidebar, header and placeholder pages all read
 // from here, so a page's address and name are defined in exactly one place.
 // Pages that are not built yet name the milestone that builds them in plannedIn.
+// Pages with child addresses (such as /knowledge-base/asthma) set hasChildPages.
 export interface PageInfo {
   path: string
   label: string
   purpose: string
   plannedIn?: string
+  hasChildPages?: boolean
 }
 
 export const PAGES = {
@@ -27,7 +29,7 @@ export const PAGES = {
     path: '/knowledge-base',
     label: 'Knowledge Base',
     purpose: 'Browse the source documents, their metadata and the chunks prepared for retrieval.',
-    plannedIn: 'PRD 1.6',
+    hasChildPages: true,
   },
   modelLab: {
     path: '/model-lab',
@@ -51,6 +53,9 @@ export const NAV_ITEMS: PageInfo[] = [
 ]
 
 // Find the page whose address matches the browser's current path, if any.
+// A page with child pages also matches the addresses beneath it.
 export function findPage(pathname: string): PageInfo | undefined {
-  return NAV_ITEMS.find((page) => matchPath({ path: page.path, end: true }, pathname))
+  return NAV_ITEMS.find((page) =>
+    matchPath({ path: page.path, end: !page.hasChildPages }, pathname),
+  )
 }

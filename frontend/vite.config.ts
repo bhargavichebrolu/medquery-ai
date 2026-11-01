@@ -8,5 +8,8 @@ export default defineConfig({
     // jsdom gives tests a simulated browser page to render components into.
     environment: 'jsdom',
     setupFiles: './src/setupTests.ts',
+    // Show console output from passing tests too, so warnings such as a skipped
+    // archive comparison are always visible.
+    silent: false,
   },
 })

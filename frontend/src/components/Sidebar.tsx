@@ -27,7 +27,7 @@ function Sidebar() {
         </ul>
       </nav>
 
-      <p className="sidebar-footer">Application shell · PRD 1.2</p>
+      <p className="sidebar-footer">Part 1 · frontend</p>
     </aside>
   )
 }
