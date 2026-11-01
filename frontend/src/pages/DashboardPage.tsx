@@ -2,15 +2,12 @@ import { Link } from 'react-router'
 import StatCard from '../components/StatCard'
 import { DATASET_FACTS } from '../data/researchDataset'
 import { NAV_ITEMS, PAGES } from '../navigation'
+import { useSelectedModel } from '../state/modelSelection'
 
 // Every page except the Dashboard itself.
 const EXPLORE_PAGES = NAV_ITEMS.filter((page) => page !== PAGES.dashboard)
 
 const UPCOMING = [
-  {
-    title: 'Selected embedding model',
-    text: 'Not chosen yet. You will choose one in the Model Lab (PRD 1.4).',
-  },
   {
     title: 'Research results summary',
     text: 'Verified retrieval results will appear here once the Analytics page is built (PRD 1.5).',
@@ -22,6 +19,8 @@ const UPCOMING = [
 ]
 
 function DashboardPage() {
+  const { selectedModel } = useSelectedModel()
+
   return (
     <>
       <p className="page-purpose">{PAGES.dashboard.purpose}</p>
@@ -38,6 +37,30 @@ function DashboardPage() {
         </div>
       </section>
 
+      <section className="dashboard-section" aria-labelledby="model-heading">
+        <h2 id="model-heading">Selected embedding model</h2>
+        <div className="config-panel">
+          {selectedModel ? (
+            <>
+              <p className="stat-value">{selectedModel.id}</p>
+              <p className="stat-detail">
+                <code>{selectedModel.huggingFaceId}</code> · {selectedModel.dimensions} dimensions
+              </p>
+              <Link to={PAGES.modelLab.path} className="text-link">
+                Change in the Model Lab
+              </Link>
+            </>
+          ) : (
+            <>
+              <p className="stat-value">No model selected</p>
+              <Link to={PAGES.modelLab.path} className="text-link">
+                Choose one in the Model Lab
+              </Link>
+            </>
+          )}
+        </div>
+      </section>
+
       <section className="dashboard-section" aria-labelledby="explore-heading">
         <h2 id="explore-heading">Explore</h2>
         <div className="card-grid">
@@ -45,7 +68,9 @@ function DashboardPage() {
             <Link key={page.path} to={page.path} className="explore-card">
               <span className="explore-title">{page.label}</span>
               <span className="explore-purpose">{page.purpose}</span>
-              <span className="explore-status">Planned: {page.plannedIn}</span>
+              <span className="explore-status">
+                {page.plannedIn ? `Planned: ${page.plannedIn}` : 'Available'}
+              </span>
             </Link>
           ))}
         </div>

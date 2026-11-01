@@ -59,7 +59,7 @@ describe('Dashboard', () => {
     renderDashboard()
     const upcoming = section('Coming later')
 
-    for (const title of ['Selected embedding model', 'Research results summary', 'Recent experiments']) {
+    for (const title of ['Research results summary', 'Recent experiments']) {
       expect(upcoming.getByRole('heading', { name: title })).toBeInTheDocument()
     }
     expect(document.body.textContent).not.toMatch(/MRR|nDCG|precision|recall/i)

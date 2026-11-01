@@ -151,6 +151,8 @@ code {
 .app-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 16px;
   height: var(--header-height);
   padding: 0 32px;
   background: var(--surface);
@@ -161,6 +163,26 @@ code {
   margin: 0;
   font-size: 1.25rem;
   color: var(--text-strong);
+}
+
+.model-badge {
+  flex-shrink: 0;
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-strong);
+  text-decoration: none;
+}
+
+.model-badge:hover {
+  border-color: var(--accent);
+}
+
+.model-badge:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 /* ---------- Page content ---------- */
@@ -297,6 +319,120 @@ code {
 
 h3.placeholder-label {
   margin-top: 0;
+}
+
+/* ---------- Model Lab ---------- */
+
+.info-panel {
+  margin-bottom: 32px;
+  padding: 16px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 10px;
+}
+
+.info-panel h2,
+.model-picker legend {
+  margin: 0 0 8px;
+  padding: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-strong);
+}
+
+.model-picker {
+  margin: 0 0 32px;
+  padding: 0;
+  border: none;
+}
+
+.model-picker .section-note {
+  margin: 12px 0 0;
+}
+
+.model-option {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  column-gap: 10px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.model-option input {
+  grid-row: span 2;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.model-option:hover {
+  border-color: var(--accent);
+}
+
+/* The selected card: :has() lets the card react to the radio button inside it. */
+.model-option:has(input:checked) {
+  background: var(--accent-tint);
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.model-option:has(input:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.model-option-name {
+  font-weight: 700;
+  color: var(--text-strong);
+}
+
+.model-option-detail {
+  font-size: 0.875rem;
+}
+
+.config-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 16px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.config-list {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 8px 24px;
+  margin: 0;
+}
+
+.config-list dt {
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.config-list dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 560px) {
+  .config-list {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+
+  .config-list dd {
+    margin-bottom: 8px;
+  }
 }
 
 /* ---------- Narrow screens: sidebar becomes a bar across the top ---------- */

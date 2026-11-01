@@ -2,11 +2,12 @@ import { matchPath } from 'react-router'
 
 // One description per page. The sidebar, header and placeholder pages all read
 // from here, so a page's address and name are defined in exactly one place.
+// Pages that are not built yet name the milestone that builds them in plannedIn.
 export interface PageInfo {
   path: string
   label: string
   purpose: string
-  plannedIn: string
+  plannedIn?: string
 }
 
 export const PAGES = {
@@ -14,7 +15,6 @@ export const PAGES = {
     path: '/',
     label: 'Dashboard',
     purpose: 'An overview of the knowledge base, the selected embedding model and recent experiments.',
-    plannedIn: 'PRD 1.3',
   },
   chat: {
     path: '/chat',
@@ -33,7 +33,6 @@ export const PAGES = {
     path: '/model-lab',
     label: 'Model Lab',
     purpose: 'Choose an embedding model (MPNet, MiniLM, BGE or E5) and view its configuration.',
-    plannedIn: 'PRD 1.4',
   },
   analytics: {
     path: '/analytics',
