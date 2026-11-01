@@ -1,10 +1,16 @@
+/* ---------- Colours and base typography ---------- */
+
 :root {
   --bg: #f7f9fa;
   --surface: #ffffff;
   --text: #4a5560;
   --text-strong: #12202b;
   --accent: #0b7a75;
+  --accent-tint: #e3f2f1;
   --border: #dde3e8;
+
+  --sidebar-width: 240px;
+  --header-height: 64px;
 
   font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.5;
@@ -21,66 +27,220 @@
     --text: #a9b4be;
     --text-strong: #eef2f5;
     --accent: #4fc2bb;
+    --accent-tint: #1d3534;
     --border: #2a343d;
   }
 }
 
 body {
   margin: 0;
-  min-height: 100vh;
-  display: grid;
-  place-items: center;
   background: var(--bg);
 }
 
-.welcome {
-  box-sizing: border-box;
-  width: min(640px, 100% - 32px);
-  padding: 40px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
+p {
+  margin: 0;
 }
 
-.milestone {
-  margin: 0;
+code {
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 0.9em;
+  color: var(--text-strong);
+}
+
+/* ---------- Shell: sidebar on the left, header and page on the right ---------- */
+
+.app-shell {
+  display: grid;
+  grid-template-columns: var(--sidebar-width) 1fr;
+  min-height: 100vh;
+}
+
+.main-column {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* ---------- Sidebar ---------- */
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 20px 12px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 8px;
+}
+
+.brand-mark {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 7px;
+  background: var(--accent);
+  color: var(--surface);
+  font-weight: 700;
+}
+
+.brand-name {
+  font-weight: 700;
+  color: var(--text-strong);
+}
+
+.brand-tagline {
   font-size: 0.8rem;
+}
+
+.nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav-link {
+  display: block;
+  padding: 8px 12px;
+  border-radius: 6px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.nav-link:hover {
+  background: var(--bg);
+  color: var(--text-strong);
+}
+
+.nav-link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* The current page. Styling aria-current keeps the visual highlight and the
+   screen-reader announcement in step. */
+.nav-link[aria-current='page'] {
+  background: var(--accent-tint);
+  box-shadow: inset 3px 0 0 var(--accent);
+  color: var(--text-strong);
+  font-weight: 600;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 0 8px;
+  font-size: 0.75rem;
+}
+
+/* ---------- Header ---------- */
+
+.app-header {
+  display: flex;
+  align-items: center;
+  height: var(--header-height);
+  padding: 0 32px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--text-strong);
+}
+
+/* ---------- Page content ---------- */
+
+.page {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 880px;
+  padding: 32px;
+}
+
+.page-purpose {
+  margin-bottom: 24px;
+  font-size: 1.05rem;
+}
+
+.placeholder {
+  padding: 24px;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.placeholder-label {
+  margin-bottom: 4px;
+  font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--accent);
 }
 
-h1 {
-  margin: 8px 0 0;
-  font-size: 2.5rem;
-  line-height: 1.1;
-  color: var(--text-strong);
+.text-link {
+  color: var(--accent);
+  font-weight: 600;
 }
 
-.subtitle {
-  margin: 4px 0 24px;
-  font-size: 1.25rem;
-  color: var(--text-strong);
-}
+/* ---------- Narrow screens: sidebar becomes a bar across the top ---------- */
 
-.intro {
-  margin: 0 0 16px;
-}
-
-.status {
-  margin: 0;
-  padding-top: 16px;
-  border-top: 1px solid var(--border);
-  font-size: 0.9rem;
-}
-
-@media (max-width: 480px) {
-  .welcome {
-    padding: 24px;
+@media (max-width: 768px) {
+  .app-shell {
+    grid-template-columns: 1fr;
   }
 
-  h1 {
-    font-size: 2rem;
+  .sidebar {
+    position: static;
+    height: auto;
+    gap: 12px;
+    padding: 12px 16px;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .brand {
+    padding: 0;
+  }
+
+  .nav-list {
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .nav-link {
+    white-space: nowrap;
+  }
+
+  .nav-link[aria-current='page'] {
+    box-shadow: inset 0 -3px 0 var(--accent);
+  }
+
+  .sidebar-footer {
+    display: none;
+  }
+
+  .app-header,
+  .page {
+    padding-inline: 16px;
+  }
+
+  .page {
+    padding-block: 24px;
   }
 }

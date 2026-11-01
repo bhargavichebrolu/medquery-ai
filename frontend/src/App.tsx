@@ -1,18 +1,27 @@
+import { Route, Routes } from 'react-router'
+import AppLayout from './components/AppLayout'
+import { PAGES } from './navigation'
+import AnalyticsPage from './pages/AnalyticsPage'
+import ChatPage from './pages/ChatPage'
+import DashboardPage from './pages/DashboardPage'
+import KnowledgeBasePage from './pages/KnowledgeBasePage'
+import ModelLabPage from './pages/ModelLabPage'
+import NotFoundPage from './pages/NotFoundPage'
+
+// Which page to show for each address. Every route sits inside AppLayout,
+// so all pages share the same sidebar and header.
 function App() {
   return (
-    <main className="welcome">
-      <p className="milestone">PRD 1.1 · Frontend foundation</p>
-      <h1>MedQuery AI</h1>
-      <p className="subtitle">RAG Experiment Studio</p>
-      <p className="intro">
-        A workspace for comparing embedding models and asking questions that are answered from NHS
-        health articles, with the supporting evidence shown alongside each answer.
-      </p>
-      <p className="status">
-        The React + TypeScript frontend is running. Navigation and application pages arrive in
-        the next milestones.
-      </p>
-    </main>
+    <Routes>
+      <Route element={<AppLayout />}>
+        <Route path={PAGES.dashboard.path} element={<DashboardPage />} />
+        <Route path={PAGES.chat.path} element={<ChatPage />} />
+        <Route path={PAGES.knowledgeBase.path} element={<KnowledgeBasePage />} />
+        <Route path={PAGES.modelLab.path} element={<ModelLabPage />} />
+        <Route path={PAGES.analytics.path} element={<AnalyticsPage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Route>
+    </Routes>
   )
 }
 
