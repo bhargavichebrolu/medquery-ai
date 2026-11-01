@@ -36,7 +36,6 @@ describe('application navigation', () => {
     fireEvent.click(nav.getByRole('link', { name: 'Analytics' }))
 
     expect(screen.getByRole('heading', { level: 1, name: 'Analytics' })).toBeInTheDocument()
-    expect(screen.getByText('This page will be built in PRD 1.5.')).toBeInTheDocument()
     expect(nav.getByRole('link', { name: 'Analytics' })).toHaveAttribute('aria-current', 'page')
     expect(nav.getByRole('link', { name: 'Dashboard' })).not.toHaveAttribute('aria-current')
   })

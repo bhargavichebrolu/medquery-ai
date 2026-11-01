@@ -9,6 +9,11 @@
   --accent-tint: #e3f2f1;
   --border: #dde3e8;
 
+  /* Chart marks, checked with the data-viz palette validator against --surface.
+     Blue is the single-series colour; grey de-emphasises unselected bars. */
+  --chart-bar: #2a78d6;
+  --chart-bar-muted: #9da6ae;
+
   --sidebar-width: 240px;
   --header-height: 64px;
 
@@ -29,6 +34,8 @@
     --accent: #4fc2bb;
     --accent-tint: #1d3534;
     --border: #2a343d;
+    --chart-bar: #3987e5;
+    --chart-bar-muted: #53606b;
   }
 }
 
@@ -49,9 +56,12 @@ code {
 
 /* ---------- Shell: sidebar on the left, header and page on the right ---------- */
 
+/* minmax(0, 1fr) lets the content column shrink to the screen; a plain 1fr would
+   grow to fit its widest content (a wide table or the row of nav links) and push
+   the page off the side of narrow screens. */
 .app-shell {
   display: grid;
-  grid-template-columns: var(--sidebar-width) 1fr;
+  grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
   min-height: 100vh;
 }
 
@@ -424,6 +434,275 @@ h3.placeholder-label {
   overflow-wrap: anywhere;
 }
 
+/* ---------- Analytics ---------- */
+
+.notice {
+  margin-bottom: 32px;
+  padding: 16px 20px;
+  background: var(--accent-tint);
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+}
+
+.notice h2 {
+  margin: 0 0 6px;
+  font-size: 1rem;
+  color: var(--text-strong);
+}
+
+.section-note.after-table {
+  margin: 12px 0 0;
+}
+
+.subsection-heading {
+  margin: 24px 0 12px;
+  font-size: 0.95rem;
+  color: var(--text-strong);
+}
+
+.table-scroll {
+  overflow-x: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.data-table caption {
+  padding: 10px 12px 0;
+  text-align: left;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 0.8rem;
+}
+
+.data-table th,
+.data-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.data-table tbody tr:last-child > * {
+  border-bottom: none;
+}
+
+.data-table thead th {
+  font-size: 0.8rem;
+  color: var(--text-strong);
+  white-space: nowrap;
+}
+
+.data-table tbody th {
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.data-table .numeric {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.data-table tr[data-selected='true'] > *,
+.data-table [data-selected='true'] {
+  background: var(--accent-tint);
+}
+
+.row-tag {
+  margin-left: 8px;
+  padding: 1px 8px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+.rank {
+  white-space: nowrap;
+}
+
+/* Lower rankings are marked by weight and a symbol as well as colour. */
+.rank-low {
+  font-weight: 700;
+  color: var(--text-strong);
+}
+
+.rank-low::before {
+  content: '▲ ';
+  font-size: 0.65em;
+  vertical-align: 0.15em;
+  color: var(--text);
+}
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.bar-chart {
+  margin: 0;
+  padding: 16px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.bar-chart figcaption {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+}
+
+.chart-title {
+  font-weight: 700;
+  color: var(--text-strong);
+}
+
+.chart-subtitle {
+  font-size: 0.8rem;
+}
+
+.bar-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bar-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  align-items: center;
+  min-height: 32px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.bar-row:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.bar-label {
+  font-weight: 600;
+  color: var(--text-strong);
+}
+
+/* The bar grows from a hairline baseline; the right margin keeps room for the
+   value label at the tip of the longest bar. */
+.bar-area {
+  position: relative;
+  height: 32px;
+  margin-right: 56px;
+  border-left: 1px solid var(--border);
+}
+
+.bar-fill {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: var(--share);
+  height: 16px;
+  transform: translateY(-50%);
+  border-radius: 0 4px 4px 0;
+  background: var(--chart-bar);
+}
+
+.bar-row[data-muted='true'] .bar-fill {
+  background: var(--chart-bar-muted);
+}
+
+.bar-row:hover .bar-fill,
+.bar-row:focus-visible .bar-fill {
+  filter: brightness(1.12);
+}
+
+.bar-value {
+  position: absolute;
+  top: 50%;
+  left: calc(var(--share) + 6px);
+  transform: translateY(-50%);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-strong);
+}
+
+.bar-tooltip {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 56px;
+  z-index: 1;
+  display: none;
+  padding: 6px 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.bar-tooltip strong {
+  color: var(--text-strong);
+  font-variant-numeric: tabular-nums;
+}
+
+.bar-row:hover .bar-tooltip,
+.bar-row:focus-visible .bar-tooltip {
+  display: block;
+}
+
+.exact-values {
+  margin-bottom: 32px;
+}
+
+.exact-values summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.exact-values .table-scroll {
+  margin-top: 12px;
+}
+
+.definition-list {
+  margin: 0;
+}
+
+.definition-list dt {
+  margin-top: 12px;
+  font-weight: 700;
+  color: var(--text-strong);
+}
+
+.definition-list dd {
+  margin: 2px 0 0;
+}
+
+.limitations-list {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.limitations-list li + li {
+  margin-top: 6px;
+}
+
+.limitations-list strong {
+  color: var(--text-strong);
+}
+
 @media (max-width: 560px) {
   .config-list {
     grid-template-columns: 1fr;
@@ -439,7 +718,7 @@ h3.placeholder-label {
 
 @media (max-width: 768px) {
   .app-shell {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .sidebar {

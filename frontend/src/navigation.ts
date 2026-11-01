@@ -38,7 +38,6 @@ export const PAGES = {
     path: '/analytics',
     label: 'Analytics',
     purpose: 'Research and evaluation results comparing the embedding models.',
-    plannedIn: 'PRD 1.5',
   },
 } satisfies Record<string, PageInfo>
 

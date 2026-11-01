@@ -55,13 +55,14 @@ describe('Dashboard', () => {
     expect(screen.getByRole('heading', { level: 1, name: 'Model Lab' })).toBeInTheDocument()
   })
 
-  it('shows placeholders for unbuilt features and no performance metrics', () => {
+  it('links to research results without showing any performance metrics', () => {
     renderDashboard()
-    const upcoming = section('Coming later')
+    const research = section('Research and experiments')
 
-    for (const title of ['Research results summary', 'Recent experiments']) {
-      expect(upcoming.getByRole('heading', { name: title })).toBeInTheDocument()
+    for (const title of ['Research results', 'Recent experiments']) {
+      expect(research.getByRole('heading', { name: title })).toBeInTheDocument()
     }
+    expect(research.getByRole('link', { name: 'View in Analytics' })).toHaveAttribute('href', '/analytics')
     expect(document.body.textContent).not.toMatch(/MRR|nDCG|precision|recall/i)
   })
 })

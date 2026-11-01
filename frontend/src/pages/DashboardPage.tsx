@@ -7,10 +7,12 @@ import { useSelectedModel } from '../state/modelSelection'
 // Every page except the Dashboard itself.
 const EXPLORE_PAGES = NAV_ITEMS.filter((page) => page !== PAGES.dashboard)
 
-const UPCOMING = [
+// Research results stay on the Analytics page; the Dashboard only links to them.
+const PANELS = [
   {
-    title: 'Research results summary',
-    text: 'Verified retrieval results will appear here once the Analytics page is built (PRD 1.5).',
+    title: 'Research results',
+    text: 'The historical retrieval results from the original research are on the Analytics page.',
+    link: { to: PAGES.analytics.path, label: 'View in Analytics' },
   },
   {
     title: 'Recent experiments',
@@ -76,13 +78,18 @@ function DashboardPage() {
         </div>
       </section>
 
-      <section className="dashboard-section" aria-labelledby="upcoming-heading">
-        <h2 id="upcoming-heading">Coming later</h2>
+      <section className="dashboard-section" aria-labelledby="research-heading">
+        <h2 id="research-heading">Research and experiments</h2>
         <div className="card-grid">
-          {UPCOMING.map((panel) => (
+          {PANELS.map((panel) => (
             <div key={panel.title} className="placeholder">
               <h3 className="placeholder-label">{panel.title}</h3>
               <p>{panel.text}</p>
+              {panel.link && (
+                <Link to={panel.link.to} className="text-link">
+                  {panel.link.label}
+                </Link>
+              )}
             </div>
           ))}
         </div>
