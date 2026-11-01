@@ -1,9 +1,0 @@
-# Normalise project text files to LF in the repository and working tree.
-* text=auto eol=lf
-
-# The research archive must stay byte-identical so it keeps matching
-# docs/baseline/MANIFEST.sha256 on every checkout: no line-ending conversion.
-Healthcare_RAG/** -text
-
-*.png binary
-*.ipynb -text

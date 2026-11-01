@@ -1,42 +1,16 @@
+# --- Research data (original dissertation archive, ~466 MB) ---
+# Notebooks and results/ are tracked; the data folder is never committed.
+/Healthcare_RAG/data/
+
 # --- Secrets and local configuration ---
 .env
 .env.*
-!.env.example
-*.pem
-*.key
-.huggingface/
-hf_token*
 
-# --- Python ---
-__pycache__/
-*.py[cod]
-.venv/
-venv/
-*.egg-info/
-.pytest_cache/
-.ruff_cache/
-.mypy_cache/
-.coverage
-htmlcov/
-build/
+# --- Frontend (Node) ---
+node_modules/
 dist/
-
-# --- Model weights and caches ---
-/models/
-*.safetensors
-*.bin
-*.pt
-*.pth
-*.onnx
-*.gguf
-
-# --- Datasets and generated artefacts ---
-# The research archive's data folder (raw/cleaned/chunks/embeddings/FAISS,
-# ~470 MB) is never committed. Notebooks and the small results files are
-# tracked so the dissertation baseline stays reviewable.
-/Healthcare_RAG/data/
-/data/
-/experiments/runs/
+coverage/
+*.log
 
 # --- Editors / OS ---
 .vscode/
