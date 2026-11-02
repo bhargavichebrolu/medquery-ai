@@ -38,6 +38,22 @@ run, and the tests fail when warnings are treated as errors (`pytest -W error`).
 by the original `httpx` author and maintained by Pydantic. It is a development-only
 dependency: the running API does not use it.
 
+## Article processing
+
+`medquery_api.processing` cleans and chunks article text the way the research notebooks did,
+in plain Python with no extra libraries:
+
+| Function | Does what |
+|---|---|
+| `clean_text(text)` | Notebook 02's cleaning |
+| `split_text(text, chunk_size=1000, chunk_overlap=200, separators=...)` | Notebook 03's LangChain `RecursiveCharacterTextSplitter`, reimplemented |
+| `chunk_article(text, source_file)` | `split_text`, numbered into records shaped like the archive's chunk files |
+
+`tests/test_processing.py` has unit tests on small texts and compares the output with the
+archive (read only): all 698 cleaned articles byte for byte, and all 3,796 chunk records
+(order, id, file name, length and text). The archive comparisons are skipped, with the reason
+shown, when `Healthcare_RAG/data` is absent; `-rP` prints the measured counts.
+
 ## Research pipeline checks
 
 `tests/test_research_pipeline.py` checks the research archive against

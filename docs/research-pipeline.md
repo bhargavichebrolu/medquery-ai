@@ -106,6 +106,9 @@ chunk files use Unix (LF) line endings.
 Step 4 removes repeated lines across the whole article, not just neighbouring ones, so a
 heading or sentence that appears twice in a page is kept only the first time.
 
+**Reproduced in the backend** (PRD 2.1): `medquery_api.processing.clean_text` turns all 698
+raw articles into the archived cleaned articles byte for byte (`backend/tests/test_processing.py`).
+
 ## Stage 3: Chunk (notebook 03)
 
 From the code (cell 5), LangChain's `RecursiveCharacterTextSplitter`:
@@ -144,6 +147,17 @@ Why so few overlap (from how LangChain's splitter works, not something the check
 it starts a new chunk, it carries over whole pieces (sections, paragraphs, lines, sentences)
 from the end of the previous chunk, and only as many as fit in 200 characters. When the last
 piece is longer than that, nothing is carried over.
+
+**Reproduced in the backend** (PRD 2.1): `medquery_api.processing.chunk_article` reimplements
+the splitter in plain Python, without LangChain. Applied to the 698 cleaned articles, it gives
+all 3,796 archived chunk records exactly: same order, `chunk_id`, `source_file`,
+`chunk_length` and text. Starting from the raw articles (cleaning, then chunking) gives the
+same result. As a separate diagnostic, writing the records the way notebook 03 did
+(`indent=4, ensure_ascii=False`) reproduces all 698 chunk files byte for byte.
+
+This shows the reimplementation matches the LangChain version the notebooks used **on this
+data**. Situations the archive does not contain, such as a piece of 1,000 or more characters
+with no finer break point, follow the algorithm as written and are covered only by unit tests.
 
 ## Stage 4: Embed (notebook 04)
 
@@ -298,8 +312,8 @@ cell 24.
 ## Not covered here
 
 - Re-running any notebook, or rebuilding chunks, embeddings or indexes.
-- Re-splitting the text with LangChain (Part 2.1) or loading the embedding models (Part 2.2),
-  so retrieval itself is described from the code, not tested.
+- Loading the embedding models (Part 2.2), so retrieval itself is described from the code,
+  not tested. (Cleaning and chunking are reproduced in the backend; see stages 2 and 3.)
 - Checking the values in `results/` (the Analytics page shows them as historical results).
 - Re-downloading or comparing against the NHS website.
 
