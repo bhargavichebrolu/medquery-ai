@@ -38,6 +38,26 @@ run, and the tests fail when warnings are treated as errors (`pytest -W error`).
 by the original `httpx` author and maintained by Pydantic. It is a development-only
 dependency: the running API does not use it.
 
+## Research pipeline checks
+
+`tests/test_research_pipeline.py` checks the research archive against
+[`docs/research-pipeline.md`](../docs/research-pipeline.md). It only reads files.
+
+- **Notebook checks** confirm the settings the documentation quotes (cleaning function,
+  chunk size and overlap, model names, normalisation, index type, query prefixes) are what
+  the notebooks contain.
+- **Data checks** confirm each stage's files agree with the previous one: cleaning is
+  reproduced byte for byte; chunks, embeddings, FAISS indexes and their metadata line up
+  row for row; vectors have length 1 within a stated tolerance. They are skipped, with the
+  reason shown, when `Healthcare_RAG/data` is absent.
+
+`uv run pytest tests/test_research_pipeline.py -rP` also prints the value each check
+measured. The checks take about 20 seconds; the largest embedding file (98 MB) briefly needs
+about 300 MiB of memory, because it is one JSON array that has to be read whole.
+
+These checks show the files are consistent with the notebook code. They do not show which
+notebook run produced a file.
+
 ## Configuration
 
 `MEDQUERY_DATA_DIR` points the backend at a different data folder. By default it uses
