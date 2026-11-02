@@ -278,11 +278,34 @@ Notebook 05's cell 11 is an earlier test of the same steps with the top 3; noteb
 the top 5 throughout, including the evaluation (`EVALUATION_TOP_K = 5`). The function loads
 the embedding model again on every call.
 
-This stage was **not run** for this document: it needs the embedding models, which Part 2.2
-adds.
-
 The evaluation in notebook 06 (cell 30) judges retrieval by article, not by chunk: a result
 counts as relevant when its `source_file` is one of the question's relevant articles.
+
+**Reproduced in the backend** (PRD 2.4): `POST /api/retrieve` embeds a question (PRD 2.2) and
+searches the research index exactly (PRD 2.3). Compared with the research's recorded results
+on 2 November 2026 (`backend/tests/test_retrieval.py`, `-m models`):
+
+| Archived results | Compared | Result |
+|---|---|---|
+| `llama_rag_test_results.json`: 3 questions, BGE | top-5 chunks and scores | Same chunks; scores within 1.2×10⁻⁷ |
+| `formal_rag_evaluation_data.json`: 10 questions, MPNet | top-5 articles and chunk texts | 10 of 10 the same |
+| `corrected_retrieval_results.csv`: 10 questions × 4 models | Precision@5, Recall@5, MRR@5, nDCG@5, with notebook 06's formulas | 40 of 40 rows reproduced (see the tie note) |
+
+**Exactly tied chunks.** 34 chunk texts appear more than once (70 chunks), and chunks with
+identical text can score exactly the same; both ties below are such pairs. The backend returns tied chunks
+lower row first (PRD 2.3); the research's FAISS returned the higher row first in both exact
+ties that its records show (BGE question "What are the symptoms of asthma?", ranks 4–5; and
+evaluation question 6, "What are the symptoms of hives?", ranks 1–2, where `hives.txt` chunk 2
+and `rashes_in_babies_and_children.txt` chunk 30 tie in every model). Question 6's MRR@5 and
+nDCG@5 depend on which of the tied pair comes first, so the metrics comparison accepts a row
+when some order of exactly tied results gives the archived values; rankings without exact ties
+must match as returned. Only question 6 needed this, in all four models; the archive is
+consistent with itself (recomputing from its own MPNet retrieval gives the CSV's values).
+
+Live, on this computer's CPU, after a model is loaded a request takes about 9–28 ms (median;
+embedding 5–17 ms, search under 1 ms). Loading takes 0.2–2.8 s per model, and the first
+request about 6 s, mostly loading PyTorch. With E5 loaded the server uses about 1,860 MiB
+(peak 1,953 MiB); switching to BGE brings it back to about 620 MiB.
 
 ## Where the results files come from
 

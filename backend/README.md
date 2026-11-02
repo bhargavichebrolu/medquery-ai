@@ -1,11 +1,12 @@
 # MedQuery AI: backend
 
-A small [FastAPI](https://fastapi.tiangolo.com/) service. For now it has two endpoints:
+A small [FastAPI](https://fastapi.tiangolo.com/) service with three endpoints:
 
 | Endpoint | Returns |
 |---|---|
 | `GET /api/health` | `{"status": "ok"}` when the service is running |
 | `GET /api/dataset/summary` | Article, chunk and embedding-index counts, counted live from `Healthcare_RAG/data` |
+| `POST /api/retrieve` | The research chunks most similar to a question, with scores (see [Retrieval](#retrieval)) |
 
 The backend only **reads** the research archive; it never writes to it.
 
@@ -133,6 +134,34 @@ for hit in hits:
 `tests/test_knowledge_base.py` has unit tests on a tiny generated data folder and archive
 tests: every index is bit-identical to the archived embeddings, and searching with each of
 the 4 × 3,796 archived vectors returns its own chunk first.
+
+## Retrieval
+
+`POST /api/retrieve` embeds a question with one of the four models (adding `query: ` for E5)
+and searches that model's research index exactly, as notebook 06 did.
+
+```
+request:  {"question": "What are the symptoms of asthma?", "model": "BGE", "topK": 5}
+response: {"question", "model", "modelId", "revision", "topK",
+           "results": [{"rank", "score", "sourceFile", "chunkId", "chunkLength", "text"}],
+           "timings": {"modelLoadMs", "embeddingMs", "searchMs"}}
+```
+
+- **Inputs:** `question` is 1 to 1,000 characters after surrounding whitespace is removed;
+  `model` is `MiniLM`, `MPNet`, `E5` or `BGE`; `topK` is a whole number from 1 to 20 (default
+  5). Anything else is rejected with 422 before any model or data is loaded.
+- **Results:** highest score (cosine similarity) first; exactly equal scores in row order.
+- **One model in memory:** the last model used stays loaded; asking for another releases it
+  and loads the new one. `modelLoadMs` is that load time, and 0 when the model was already
+  loaded. Requests use the model one at a time, so a model is never swapped mid-request.
+- **Errors (503):** a model missing from the local cache (the message gives the download
+  command), or research data that is missing or fails its checks (details go to the server
+  log, not the response). Question text is not logged.
+- **Speed on this computer's CPU:** after loading, a request takes about 10-30 ms; loading
+  takes 0.2-3 s per model, and the very first request about 6 s, mostly loading PyTorch.
+
+`tests/test_retrieval.py` has fast API tests with a stand-in model, and opt-in comparisons
+with the research's recorded results (`-m models`).
 
 ## Research pipeline checks
 

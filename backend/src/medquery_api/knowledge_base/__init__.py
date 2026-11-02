@@ -4,6 +4,7 @@ from medquery_api.knowledge_base.flat_index import IndexFormatError, read_flat_i
 from medquery_api.knowledge_base.store import (
     KnowledgeBase,
     KnowledgeBaseError,
+    KnowledgeBaseNotFoundError,
     SearchHit,
     load_knowledge_base,
 )
@@ -12,6 +13,7 @@ __all__ = [
     "IndexFormatError",
     "KnowledgeBase",
     "KnowledgeBaseError",
+    "KnowledgeBaseNotFoundError",
     "SearchHit",
     "load_knowledge_base",
     "read_flat_index",

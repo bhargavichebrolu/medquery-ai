@@ -28,6 +28,10 @@ class KnowledgeBaseError(ValueError):
     """The data folder is missing something, or its files do not line up."""
 
 
+class KnowledgeBaseNotFoundError(KnowledgeBaseError):
+    """There is no research data at all in the data folder."""
+
+
 @dataclass(frozen=True)
 class SearchHit:
     rank: int  # 1 for the best match
@@ -140,7 +144,7 @@ def _read_chunks(data_dir: Path) -> list[Chunk]:
     """All chunk records, articles in file-name order (the order the indexes were built in)."""
     chunk_dir = data_dir / "chunks"
     if not chunk_dir.is_dir():
-        raise KnowledgeBaseError(f"research data not found: no chunks folder in {data_dir}")
+        raise KnowledgeBaseNotFoundError(f"research data not found: no chunks folder in {data_dir}")
     chunks = []
     for path in sorted(chunk_dir.glob("*.json"), key=lambda p: p.name):
         with path.open("r", encoding="utf-8") as file:
