@@ -29,7 +29,9 @@ describe('Knowledge Base catalogue', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Show 50 more' }))
     expect(articleRows()).toHaveLength(100)
-  })
+    // When the whole suite runs in parallel this test has taken 4.5-5 s, close to the default
+    // 5 s limit (alone it takes under 2 s), so this test alone gets 10 s.
+  }, 10_000)
 
   it('searches titles and filters by evaluation use and classification', () => {
     renderAt('/knowledge-base')

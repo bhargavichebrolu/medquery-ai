@@ -247,6 +247,22 @@ way, 0 means unrelated.
 - `metadata.json` is identical to the chunk records, in the same order, so row *i* of the
   metadata describes vector *i* of the index. Retrieval relies on this.
 
+**Served by the backend** (PRD 2.3): `medquery_api.knowledge_base` loads these four indexes
+and their metadata, read only and without the faiss library, checking each file's header and
+exact size before reading vectors and each `metadata.json` against the chunks. It searches
+exactly, like `IndexFlatIP`: every chunk is scored by inner product, highest first, with
+exactly equal scores in row order. Measured on 2 November 2026:
+
+- Every index vector, as loaded, is bit-for-bit identical to the archived embeddings.
+- Searching with each archived vector returns its own chunk (or one with identical text)
+  first: 3,796 of 3,796 for every model. The top score differs from the vector's squared
+  length by at most 2.8×10⁻⁷ (float32 arithmetic).
+- Loading takes about 0.5 s and about 57 MiB (peak 87 MiB for the whole process); a top-5
+  search takes about 0.7 ms.
+
+Scores computed this way can differ from faiss's own in the last digits (around 10⁻⁷), so when
+PRD 2.4 compares search results with the archived ones it allows for nearly tied scores.
+
 ## Stage 6: Retrieve (notebooks 05 and 06)
 
 From the code (notebook 06, cell 5, `retrieve_documents(question, model_name="BGE", top_k=5)`):

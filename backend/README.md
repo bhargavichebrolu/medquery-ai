@@ -102,6 +102,38 @@ and the report, but never inside `Healthcare_RAG/`.
 `tests/test_embeddings.py` has fast unit tests with a stand-in model, plus opt-in tests
 (`-m models`) that check a sample of 33 chunks per model against the archive.
 
+## Knowledge base
+
+`medquery_api.knowledge_base` serves the research's own chunks and FAISS indexes, read only,
+with exact vector search. It needs no extra libraries: the index files are read with NumPy.
+
+```python
+from medquery_api.knowledge_base import load_knowledge_base
+
+kb = load_knowledge_base()  # loaded once per data folder, then kept in memory
+hits = kb.search("BGE", query_vector, top_k=5)  # a unit-length vector of the model's size
+for hit in hits:
+    print(hit.rank, round(hit.score, 4), hit.chunk.source_file, hit.chunk.chunk_id)
+```
+
+- **What is loaded:** the 3,796 chunks (`data/chunks`) and, for each model,
+  `data/faiss/<model>/faiss_index.bin` with its `metadata.json`. Files elsewhere, such as the
+  archive's leftover `faiss/faiss_index.bin`, are never read.
+- **Checked on loading:** each index file's header and exact size (before any vectors are
+  read); only the research's index type (flat, inner product) is accepted; each index has one
+  vector per chunk, of the model's size; each `metadata.json` matches the chunks row for row.
+  Anything else raises an error that says what is wrong.
+- **Search:** scores every chunk (inner product, which is cosine similarity for unit
+  vectors) and returns the best `top_k`, highest score first; exactly equal scores come in row
+  order. Query vectors must have the model's size, finite values and length 1 within 0.0001;
+  they are rejected, not silently normalised.
+- **Cost:** loading takes about 0.5 s and about 60 MiB of memory; one search takes under a
+  millisecond.
+
+`tests/test_knowledge_base.py` has unit tests on a tiny generated data folder and archive
+tests: every index is bit-identical to the archived embeddings, and searching with each of
+the 4 × 3,796 archived vectors returns its own chunk first.
+
 ## Research pipeline checks
 
 `tests/test_research_pipeline.py` checks the research archive against
