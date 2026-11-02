@@ -307,6 +307,12 @@ embedding 5–17 ms, search under 1 ms). Loading takes 0.2–2.8 s per model, an
 request about 6 s, mostly loading PyTorch. With E5 loaded the server uses about 1,860 MiB
 (peak 1,953 MiB); switching to BGE brings it back to about 620 MiB.
 
+**In the browser** (PRD 2.5): the web app's Retrieval page (`/retrieval`) sends a question to
+this endpoint and shows each retrieved chunk verbatim with its score, article and timings, so
+the whole pipeline can be inspected from the browser. Exactly tied scores are labelled; the
+page notes that they are listed in index order and that the research's ordering of tied
+results may differ.
+
 ## Where the results files come from
 
 All 21 files in `Healthcare_RAG/results/`, with the cell that writes each one (from the code)

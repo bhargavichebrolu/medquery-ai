@@ -15,11 +15,18 @@ function renderAt(path: string) {
 }
 
 describe('application navigation', () => {
-  it('shows a sidebar link for each of the five pages', () => {
+  it('shows a sidebar link for each of the six pages', () => {
     const nav = renderAt('/')
 
     const labels = nav.getAllByRole('link').map((link) => link.textContent)
-    expect(labels).toEqual(['Dashboard', 'Chat', 'Knowledge Base', 'Model Lab', 'Analytics'])
+    expect(labels).toEqual(['Dashboard', 'Chat', 'Retrieval', 'Knowledge Base', 'Model Lab', 'Analytics'])
+  })
+
+  it('opens the Retrieval page directly at its address', () => {
+    const nav = renderAt('/retrieval')
+
+    expect(screen.getByRole('heading', { level: 1, name: 'Retrieval' })).toBeInTheDocument()
+    expect(nav.getByRole('link', { name: 'Retrieval' })).toHaveAttribute('aria-current', 'page')
   })
 
   it('opens the Dashboard at / and marks its link as the current page', () => {

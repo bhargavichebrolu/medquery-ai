@@ -103,11 +103,14 @@ function ArticleDetailPage() {
         ) : (
           <>
             <div className="placeholder">
-              <p className="placeholder-label">Text available in Part 2</p>
+              <p className="placeholder-label">Full text not shown</p>
               <p>
-                This article&apos;s chunk text will be available when the knowledge base is
-                connected to the backend in Part 2. Only the 8 evaluation articles include text
-                for now.
+                This article&apos;s chunks appear in{' '}
+                <Link to={PAGES.retrieval.path} className="text-link">
+                  Retrieval
+                </Link>{' '}
+                results when they match a question. A view of every article&apos;s full text is
+                not built yet; only the 8 evaluation articles show their text here.
               </p>
             </div>
             <div className="table-scroll chunk-lengths">

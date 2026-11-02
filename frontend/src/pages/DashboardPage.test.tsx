@@ -38,13 +38,13 @@ describe('Dashboard', () => {
     expect(dataset.getAllByText('Source: original research dataset')).toHaveLength(4)
   })
 
-  it('links to the four other areas of the application', () => {
+  it('links to the five other areas of the application', () => {
     renderDashboard()
 
     const hrefs = section('Explore')
       .getAllByRole('link')
       .map((link) => link.getAttribute('href'))
-    expect(hrefs).toEqual(['/chat', '/knowledge-base', '/model-lab', '/analytics'])
+    expect(hrefs).toEqual(['/chat', '/retrieval', '/knowledge-base', '/model-lab', '/analytics'])
   })
 
   it('opens the Model Lab when its card is clicked', () => {

@@ -90,7 +90,8 @@ describe('Article detail page', () => {
     renderAt('/knowledge-base/noise_sensitivity_hyperacusis')
 
     expect(screen.getByRole('heading', { level: 2, name: 'Noise sensitivity (hyperacusis)' })).toBeInTheDocument()
-    expect(screen.getByText(/chunk text will be available when the knowledge base is connected to the backend in Part 2/)).toBeInTheDocument()
+    const placeholder = screen.getByText('Full text not shown').closest('.placeholder') as HTMLElement
+    expect(within(placeholder).getByRole('link', { name: 'Retrieval' })).toHaveAttribute('href', '/retrieval')
     expect(document.querySelectorAll('.chunk-text')).toHaveLength(0)
     expect(screen.getByText('Not used by the evaluation questions')).toBeInTheDocument()
   })

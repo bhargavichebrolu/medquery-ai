@@ -45,7 +45,8 @@ function ModelLabPage() {
           ))}
         </div>
         <p className="section-note">
-          Your choice is saved in this browser only. It is not sent anywhere.
+          Your choice is saved in this browser only. The Retrieval page sends it to the local
+          backend with each question.
         </p>
       </fieldset>
 
@@ -89,7 +90,8 @@ function ModelLabPage() {
         </h3>
         <p>
           The original research retrieved the {RESEARCH_SETUP.topK} most similar chunks for each
-          question (top-k = {RESEARCH_SETUP.topK}). These settings become adjustable in Part 2.
+          question (top-k = {RESEARCH_SETUP.topK}). On the Retrieval page you can choose from 1
+          to 20.
         </p>
       </section>
     </>

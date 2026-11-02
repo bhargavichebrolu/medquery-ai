@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { fetchDatasetSummary, type DatasetSummary } from '../api'
+import { fetchDatasetSummary, START_COMMAND, type DatasetSummary } from '../api'
 import { TOTAL_CHUNKS } from '../data/articleCatalogue'
 import { EMBEDDING_MODELS } from '../data/embeddingModels'
 import { ARTICLES } from '../data/knowledgeBase'
@@ -15,8 +15,6 @@ const VERIFIED = {
   chunks: TOTAL_CHUNKS,
   embeddingIndexes: EMBEDDING_MODELS.map((model) => model.id).sort(),
 }
-
-const START_COMMAND = 'cd backend\nuv run uvicorn medquery_api.main:app --reload --host 127.0.0.1 --port 8000'
 
 const count = (value: number) => value.toLocaleString('en-GB')
 

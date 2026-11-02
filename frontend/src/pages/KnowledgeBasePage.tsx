@@ -63,8 +63,11 @@ function KnowledgeBasePage() {
           {ARTICLES.length} NHS articles split into {TOTAL_CHUNKS.toLocaleString('en-GB')} chunks
           of up to 1,000 characters with a 200-character overlap. Titles are each article&apos;s
           first line. The NHS page addresses were not recorded, so no links to nhs.uk are shown.
-          This page lists article metadata; reading every article&apos;s text, searching by meaning
-          and adding documents arrive in Part 2.
+          This page lists article metadata. To search the chunks by meaning, use{' '}
+          <Link to={PAGES.retrieval.path} className="text-link">
+            Retrieval
+          </Link>
+          ; reading every article&apos;s full text and adding documents are not built yet.
         </p>
       </section>
 

@@ -25,6 +25,12 @@ export const PAGES = {
       'Ask questions about the NHS documents and receive answers with citations to the retrieved evidence.',
     plannedIn: 'Part 3',
   },
+  retrieval: {
+    path: '/retrieval',
+    label: 'Retrieval',
+    purpose:
+      'Ask a question and see the chunks an embedding model retrieves from the research knowledge base, with similarity scores.',
+  },
   knowledgeBase: {
     path: '/knowledge-base',
     label: 'Knowledge Base',
@@ -47,6 +53,7 @@ export const PAGES = {
 export const NAV_ITEMS: PageInfo[] = [
   PAGES.dashboard,
   PAGES.chat,
+  PAGES.retrieval,
   PAGES.knowledgeBase,
   PAGES.modelLab,
   PAGES.analytics,
