@@ -21,7 +21,8 @@ Run these from this `backend/` folder.
 |---|---|
 | `uv sync` | Create `.venv` and install the exact versions in `uv.lock` (first time only) |
 | `uv run uvicorn medquery_api.main:app --reload --host 127.0.0.1 --port 8000` | Start the API on this computer only |
-| `uv run pytest` | Run the tests |
+| `uv run pytest` | Run the tests (without the opt-in real-model tests) |
+| `uv run pytest -m models -rP` | Run only the real-model tests (needs the models in the local cache) |
 | `uv run ruff check .` | Lint |
 
 With the server running, http://127.0.0.1:8000/docs shows interactive API documentation.
@@ -53,6 +54,53 @@ in plain Python with no extra libraries:
 archive (read only): all 698 cleaned articles byte for byte, and all 3,796 chunk records
 (order, id, file name, length and text). The archive comparisons are skipped, with the reason
 shown, when `Healthcare_RAG/data` is absent; `-rP` prints the measured counts.
+
+## Embedding models
+
+`medquery_api.embeddings` turns text into vectors with the research's four models, using
+[sentence-transformers](https://www.sbert.net/) on the CPU:
+
+```python
+from medquery_api.embeddings import open_model
+
+with open_model("E5") as embedder:  # one model in memory at a time
+    vectors = embedder.embed_documents(["chunk text", ...])  # adds "passage: " for E5
+    question = embedder.embed_query("What are the symptoms of asthma?")  # "query: " for E5
+```
+
+| Model | Hugging Face model | Vector size | Prefixes (document / query) |
+|---|---|---|---|
+| MiniLM | `sentence-transformers/all-MiniLM-L6-v2` | 384 | none |
+| MPNet | `sentence-transformers/all-mpnet-base-v2` | 768 | none |
+| E5 | `intfloat/multilingual-e5-base` | 768 | `passage: ` / `query: ` |
+| BGE | `BAAI/bge-small-en-v1.5` | 384 | none |
+
+- **Pinned versions.** Each model is pinned to one revision (see `embeddings/models.py`).
+  These are inferred to be compatible with the research, not recorded as the ones it used.
+- **No surprise downloads.** Models load only from the local Hugging Face cache. Download them
+  once, explicitly (about 1.7 GB for all four):
+  `uv run python -m medquery_api.embeddings download` (or name one model).
+- **CPU by default.** `MEDQUERY_EMBEDDING_DEVICE` chooses another device; the PyTorch build
+  installed from PyPI on Windows supports only the CPU.
+- **Light imports.** PyTorch and sentence-transformers are imported only when a model is
+  opened, so the API and the other tests start quickly. Installing them adds about 790 MB to
+  `.venv`.
+- **Checked outputs.** Every result is checked: one vector per text, in order, of the right
+  size, finite, and of length 1 (within 0.0001).
+
+To compare all 3,796 chunks with the archived embeddings (it reads the archive only, and takes
+several minutes per model):
+
+```
+uv run python -m medquery_api.embeddings validate [--model E5] [--save-dir PATH]
+```
+
+A model passes when every chunk's vector has cosine similarity of at least 0.999 with the
+archived one and is closest to its own archived vector. `--save-dir` also saves the vectors
+and the report, but never inside `Healthcare_RAG/`.
+
+`tests/test_embeddings.py` has fast unit tests with a stand-in model, plus opt-in tests
+(`-m models`) that check a sample of 33 chunks per model against the archive.
 
 ## Research pipeline checks
 

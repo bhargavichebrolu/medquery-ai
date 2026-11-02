@@ -193,7 +193,40 @@ includes the E5 `passage: ` prefix.
   Lengths are computed in double precision from the stored float32 numbers. None is exactly 1,
   which is normal for float32 data; all are within tolerance. This shows the vectors have unit
   length, consistent with `normalize_embeddings=True`; it does not show which setting or model
-  component did the normalising.
+  component did the normalising. (Each of the four models also ends with its own normalisation
+  step, found in PRD 2.2, so both would give unit length.)
+
+**Reproduced in the backend** (PRD 2.2): `medquery_api.embeddings` re-embedded all 3,796
+chunks (made from the raw articles by PRD 2.1's cleaning and chunking) with each model, on
+this computer's CPU, and compared them with the archived vectors. Run on 2 November 2026 with
+`uv run python -m medquery_api.embeddings validate`:
+
+| Model | Cosine with archived vector: lowest | Largest 1 − cosine | Largest single-number difference | Nearest archived vector correct | Largest \|length − 1\| | Chunks over the model's token limit |
+|---|---|---|---|---|---|---|
+| MiniLM | 1.000000000 | 3.4×10⁻¹³ | 1.3×10⁻⁷ | 3,796 of 3,796 | 1.40×10⁻⁷ | 85 (limit 256) |
+| MPNet | 1.000000000 | 2.9×10⁻¹² | 2.8×10⁻⁷ | 3,796 of 3,796 | 1.70×10⁻⁷ | 53 (limit 384) |
+| E5 | 1.000000000 | 6.5×10⁻¹² | 3.9×10⁻⁷ | 3,796 of 3,796 | 1.41×10⁻⁷ | 17 (limit 512) |
+| BGE | 1.000000000 | 3.3×10⁻¹³ | 2.1×10⁻⁷ | 3,796 of 3,796 | 1.26×10⁻⁷ | 53 (limit 512) |
+
+All four pass the thresholds set before the run (every cosine at least 0.999; nearest vector
+correct for every chunk; length within 0.0001). No vector is bit-for-bit identical to the
+archive, as expected with different hardware and library versions (sentence-transformers
+6.2.0, transformers 5.22.1, PyTorch 2.15.0 CPU); the differences are of the same size as
+between the two archived BGE runs (see [Files no notebook explains](#files-no-notebook-explains)).
+Without E5's `passage: ` prefix, cosine for a sample of 33 chunks falls as low as 0.946 (mean
+0.974), so the archive could not be reproduced without it.
+
+Time and memory on this computer's CPU (Intel i7-12650H), one model per process: MiniLM
+395 s and 794 MiB peak, BGE 740 s and 1,024 MiB, MPNet 1,154 s and 1,519 MiB, E5 991 s and
+2,247 MiB (57 minutes in all). The peaks include reading the archived embedding file. Caveat:
+a lint and two short unit-test runs (about 4 seconds each) ran during the first minutes of the
+MiniLM run, so its time may be slightly inflated; the other three models ran alone.
+
+Chunks longer than a model's token limit are cut off by the model; the research's vectors were
+evidently made the same way, since they match. The model versions are pinned to revisions
+inferred to be compatible with the research (the latest on 2 November 2026, each last changed
+on or before 1 June 2026, before the pipeline ran); the notebooks did not record which
+versions they used.
 
 ## Stage 5: Index (notebook 05)
 
@@ -312,8 +345,8 @@ cell 24.
 ## Not covered here
 
 - Re-running any notebook, or rebuilding chunks, embeddings or indexes.
-- Loading the embedding models (Part 2.2), so retrieval itself is described from the code,
-  not tested. (Cleaning and chunking are reproduced in the backend; see stages 2 and 3.)
+- Retrieval itself (Part 2.4), which is described from the code, not tested. (Cleaning,
+  chunking and embedding are reproduced in the backend; see stages 2 to 4.)
 - Checking the values in `results/` (the Analytics page shows them as historical results).
 - Re-downloading or comparing against the NHS website.
 
