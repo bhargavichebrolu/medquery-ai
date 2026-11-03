@@ -2,16 +2,13 @@
 
 The ordinary tests use a stand-in model and a tiny generated knowledge base: no PyTorch, no
 model files, no research data. The tests marked `models` use the real cached models and the
-research archive, and compare retrieval with the research's recorded results; they are
-opt-in (never downloading):
+research archive, and compare retrieval with the research's recorded results (the archived
+metrics are reproduced in test_retrieval_metrics.py); they are opt-in (never downloading):
 
     uv run pytest -m models -rP
 """
 
-import ast
-import csv
 import gc
-import itertools
 import json
 import math
 import threading
@@ -406,7 +403,6 @@ def test_requests_leave_the_data_folder_unchanged(api, tmp_path):
 
 TIE_TOLERANCE = 1e-5  # archived scores this close count as tied; their order may differ
 SCORE_TOLERANCE = 1e-4  # our scores must match archived scores this closely
-METRIC_TOLERANCE = 1e-9
 
 
 @pytest.fixture(scope="module")
@@ -482,156 +478,4 @@ def test_mpnet_reproduces_the_archived_articles_and_chunk_texts(real_api):
                 problems.append(f"question {item['question_id']} ranks {[p + 1 for p in group]}")
     print(f"measured: MPNet {len(archived) - len(problems)} of {len(archived)} questions match")
 
-    assert problems == []
-
-
-# The research's source-level metrics, copied from notebook 06 (cell 30); a test below checks
-# the copies are unchanged. Used only to compare with the archived results.
-
-
-def precision_at_k_source_level(retrieved_sources, relevant_sources, k):
-    retrieved = retrieved_sources[:k]
-    unique_retrieved = list(dict.fromkeys(retrieved))
-    relevant_retrieved = sum(1 for source in unique_retrieved if source in relevant_sources)
-    return relevant_retrieved / k
-
-
-def recall_at_k_source_level(retrieved_sources, relevant_sources, k):
-    retrieved = retrieved_sources[:k]
-    unique_retrieved = set(retrieved)
-    relevant_retrieved = len(unique_retrieved.intersection(relevant_sources))
-    return relevant_retrieved / len(relevant_sources)
-
-
-def reciprocal_rank_source_level(retrieved_sources, relevant_sources):
-    for rank, source in enumerate(retrieved_sources, start=1):
-        if source in relevant_sources:
-            return 1.0 / rank
-    return 0.0
-
-
-def ndcg_at_k_source_level(retrieved_sources, relevant_sources, k):
-    retrieved = retrieved_sources[:k]
-    seen_sources = set()
-    relevance_scores = []
-    for source in retrieved:
-        if source in relevant_sources and source not in seen_sources:
-            relevance_scores.append(1)
-            seen_sources.add(source)
-        else:
-            relevance_scores.append(0)
-    dcg = 0.0
-    for rank, relevance in enumerate(relevance_scores, start=1):
-        dcg += relevance / math.log2(rank + 1)
-    ideal_relevant = min(len(relevant_sources), k)
-    idcg = sum(1 / math.log2(rank + 1) for rank in range(1, ideal_relevant + 1))
-    if idcg == 0:
-        return 0.0
-    return dcg / idcg
-
-
-METRIC_FUNCTIONS = (
-    precision_at_k_source_level,
-    recall_at_k_source_level,
-    reciprocal_rank_source_level,
-    ndcg_at_k_source_level,
-)
-
-
-def test_metric_copies_match_notebook_06():
-    with NOTEBOOK_06.open("r", encoding="utf-8") as file:
-        cell = "".join(json.load(file)["cells"][30]["source"])
-    notebook = {n.name: ast.dump(n) for n in ast.parse(cell).body if isinstance(n, ast.FunctionDef)}
-    source = Path(__file__).read_text(encoding="utf-8")
-    copies = {n.name: ast.dump(n) for n in ast.parse(source).body if isinstance(n, ast.FunctionDef)}
-
-    for function in METRIC_FUNCTIONS:
-        assert copies[function.__name__] == notebook[function.__name__]
-
-
-def research_metrics(sources: list[str], relevant: set[str]) -> dict[str, float]:
-    return {
-        "precision_at_5": precision_at_k_source_level(sources, relevant, 5),
-        "recall_at_5": recall_at_k_source_level(sources, relevant, 5),
-        "mrr": reciprocal_rank_source_level(sources, relevant),
-        "ndcg_at_5": ndcg_at_k_source_level(sources, relevant, 5),
-    }
-
-
-def exact_tie_orderings(results: list[dict], k: int = 5) -> tuple[list[list[dict]], set]:
-    """The tie groups touching the top k, and every top-k list of source files obtainable by
-    reordering results whose scores are exactly equal. Without exact ties there is just one:
-    our own order."""
-    groups: list[list[dict]] = []
-    for result in results:
-        if groups and groups[-1][-1]["score"] == result["score"]:
-            groups[-1].append(result)
-        else:
-            groups.append([result])
-    touching, position = [], 0
-    for group in groups:
-        if position >= k:
-            break
-        touching.append(group)
-        position += len(group)
-    # A group reaching the end of what was retrieved might continue beyond it.
-    assert position < len(results), "an exact tie group may extend past the retrieved results"
-    orderings = {
-        tuple(r["sourceFile"] for group in choice for r in group)[:k]
-        for choice in itertools.product(*(itertools.permutations(g) for g in touching))
-    }
-    return touching, orderings
-
-
-def metrics_match(ours: dict[str, float], row: dict[str, str]) -> bool:
-    return all(
-        abs(value - float(row[metric])) <= METRIC_TOLERANCE for metric, value in ours.items()
-    )
-
-
-@pytest.mark.models
-@needs_data
-@pytest.mark.parametrize("name", ["MiniLM", "BGE", "MPNet", "E5"])
-def test_research_metrics_are_reproduced_for_every_question(real_api, name):
-    # Our order puts exactly tied chunks lower row first (PRD 2.3); the research's FAISS order
-    # may differ there. A row passes if our own order, or a reordering within exactly tied
-    # scores only, gives the archived values. Without exact ties only our own order counts.
-    with (RESULTS / "formal_rag_evaluation_data.json").open("r", encoding="utf-8") as file:
-        relevant = {item["question_id"]: set(item["relevant_sources"]) for item in json.load(file)}
-    with (RESULTS / "corrected_retrieval_results.csv").open("r", encoding="utf-8") as file:
-        rows = [row for row in csv.DictReader(file) if row["model"] == name]
-    problems, reordered = [], []
-    for row in rows:
-        question_id = int(row["question_id"])
-        results = retrieve_real(row["question"], name, top_k=20)
-        own_order = [r["sourceFile"] for r in results[:5]]
-        if metrics_match(research_metrics(own_order, relevant[question_id]), row):
-            continue
-        groups, orderings = exact_tie_orderings(results)
-        matching = [
-            o
-            for o in orderings
-            if metrics_match(research_metrics(list(o), relevant[question_id]), row)
-        ]
-        if not matching:
-            problems.append(
-                f"question {question_id}: no order within exact ties gives the archived values; "
-                f"ours gives {research_metrics(own_order, relevant[question_id])}"
-            )
-            continue
-        tied = [
-            [(r["rank"], r["sourceFile"], r["chunkId"], r["score"]) for r in group]
-            for group in groups
-            if len(group) > 1
-        ]
-        reordered.append(
-            f"question {question_id}: archived values need an exact tie reordered: {tied}; "
-            f"{len(matching)} of {len(orderings)} orders within the ties match, "
-            f"e.g. {list(sorted(matching)[0])}"
-        )
-    print(f"measured: {name} {len(rows) - len(problems)} of {len(rows)} questions reproduce")
-    for line in reordered:
-        print(f"measured: {name} {line}")
-
-    assert len(rows) == 10
     assert problems == []

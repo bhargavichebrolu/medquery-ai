@@ -72,8 +72,8 @@ Other PRD sections that bear on Part 4 (summarised):
 | 10 evaluation questions, one relevant article each | Notebook 06 cell 28; `results/formal_rag_evaluation_data.json` (`relevant_sources`) | Historical; used by the research's retrieval evaluation |
 | 10 reference answers | `results/ragas_evaluation_dataset.json` (`reference`), written in notebook 06 cell 35 | Historical, **unverified**: written by hand "from the known relevant NHS source documents"; cells 35 and 36 (its check) have no saved output |
 | 10 Llama answers with their retrieved chunks and timings | `results/formal_rag_evaluation_data.json` | Historical; never scored for quality |
-| 40 retrieval results (4 models × 10 questions) | `results/corrected_retrieval_results.csv` | Historical; reproduced 40 of 40 by `backend/tests/test_retrieval.py` (PRD 2.4) |
-| Metric formulas (by article) | `backend/tests/test_retrieval.py`, from notebook 06 cell 30 | In the tests only, not in the application |
+| 40 retrieval results (4 models × 10 questions) | `results/corrected_retrieval_results.csv` | Historical; reproduced 40 of 40 by `backend/tests/test_retrieval_metrics.py` (PRD 2.4) |
+| Metric formulas (by article) | `backend/src/medquery_api/evaluation/retrieval_metrics.py`, from notebook 06 cell 30 | In the application since PRD 4.1 (before that, in the tests only) |
 | 8 out-of-scope questions and pass rules | [`llm-and-rag.md`](llm-and-rag.md), "Out-of-scope questions" | Approved at the PRD 3.6 review; in the evaluation dataset since PRD 4.0 |
 | Answering the 10 questions with timings, tokens, cost and grounding | `python -m medquery_api.answering review` | Built (PRD 3.3–3.6); refuses paid providers without `--allow-paid-calls` |
 | Embedding model versions | `backend/src/medquery_api/embeddings/models.py` | Pinned; inferred to match the research, not recorded by it |
@@ -187,6 +187,48 @@ Rules for every milestone:
 - **Tests:** unit tests for each formula (repeated articles, no relevant result, K larger than
   the results); the archive reproduction as an opt-in model test (`-m models`).
 - **Depends on:** 4.0.
+
+**Implemented in PRD 4.1:**
+
+- **Code:** `backend/src/medquery_api/evaluation/retrieval_metrics.py`, run with
+  `uv run python -m medquery_api.evaluation.retrieval_metrics [--model MPNet] [--k 5] [--out FILE]`
+  (local models only; no API calls). The four formula functions are notebook 06's, copied
+  unchanged, and a test compares them with the notebook.
+- **Exact ties:** the reported scores use the backend's order (exactly tied chunks lower row
+  first). Each question also lists every distinct set of scores obtainable by reordering only
+  exactly tied results, and an archived result counts as reproduced when the backend's order or
+  such a reordering gives it (PRD 2.4's rule). FAISS defines no order for exact ties, so there is
+  no notebook rule to copy beyond this.
+- **Reproduction:** all 40 archived results are reproduced through the application code: 36 in
+  the backend's order, and question 6 (`research-6`) in every model only with its exactly tied
+  pair (`hives.txt` chunk 2 and `rashes_in_babies_and_children.txt` chunk 30) reordered.
+- **Why question 6 differs:** the two chunks have identical text, so every model gives them
+  exactly the same score. The backend lists the lower row (`hives.txt`, the relevant article)
+  first, so the relevant article is at rank 1; the research's FAISS search listed the higher
+  row (`rashes_in_babies_and_children.txt`) first, so it was at rank 2. Neither order is more
+  correct: FAISS defines no order for exact ties.
+- **Consequence:** because of that tie, the application's mean MRR@5 for every model is 0.05
+  higher than the research's (for example MPNet 1.000, archived 0.95), and its mean nDCG@5 is
+  about 0.037 higher. The archived means are the low ends of the reported ranges. **This is
+  ranking-order ambiguity between exactly tied chunks, not an improvement in retrieval:** the
+  application does not outperform the research.
+- **Reporting rule (approved at the PRD 4.1 review):** the headline score is the backend's
+  actual order, always shown with the tie range; results are never reordered to match the
+  research.
+
+Measured on 3 November 2026 on this computer's CPU, with the bundled dataset
+(`sha256:39294b2b…`) at K = 5. Application results, not historical ones:
+
+| Model | Precision@5 | Recall@5 | MRR@5 (tie range) | nDCG@5 (tie range) | Top score, 10 in-scope | Top score, 8 out-of-scope |
+|---|---|---|---|---|---|---|
+| MiniLM | 0.180 | 0.900 | 0.850 (0.800–0.850) | 0.863 (0.826–0.863) | 0.4915–0.7596, median 0.7047 | 0.1686–0.6944, median 0.5147 |
+| MPNet | 0.200 | 1.000 | 1.000 (0.950–1.000) | 1.000 (0.963–1.000) | 0.5258–0.8385, median 0.7613 | 0.2355–0.6772, median 0.5227 |
+| E5 | 0.200 | 1.000 | 0.950 (0.900–0.950) | 0.963 (0.926–0.963) | 0.8351–0.9019, median 0.8864 | 0.7858–0.8985, median 0.8577 |
+| BGE | 0.200 | 1.000 | 0.950 (0.900–0.950) | 0.963 (0.926–0.963) | 0.7327–0.8935, median 0.8468 | 0.4860–0.8193, median 0.7308 |
+
+In every model the in-scope and out-of-scope ranges of top scores overlap. These figures
+describe these 18 questions only; scores are comparable only within one model, no cut-off is
+set or implied (decision 4), and none should be read from this table.
 
 ### 4.2: Answer evaluation
 

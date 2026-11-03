@@ -292,7 +292,7 @@ on 2 November 2026 (`backend/tests/test_retrieval.py`, `-m models`):
 |---|---|---|
 | `llama_rag_test_results.json`: 3 questions, BGE | top-5 chunks and scores | Same chunks; scores within 1.2×10⁻⁷ |
 | `formal_rag_evaluation_data.json`: 10 questions, MPNet | top-5 articles and chunk texts | 10 of 10 the same |
-| `corrected_retrieval_results.csv`: 10 questions × 4 models | Precision@5, Recall@5, MRR@5, nDCG@5, with notebook 06's formulas | 40 of 40 rows reproduced (see the tie note) |
+| `corrected_retrieval_results.csv`: 10 questions × 4 models | Precision@5, Recall@5, MRR@5, nDCG@5, with notebook 06's formulas | 40 of 40 rows reproduced (see the tie note); since PRD 4.1 through the application's own metrics code (`backend/tests/test_retrieval_metrics.py`) |
 
 **Exactly tied chunks.** 34 chunk texts appear more than once (70 chunks), and chunks with
 identical text can score exactly the same; both ties below are such pairs. The backend returns tied chunks

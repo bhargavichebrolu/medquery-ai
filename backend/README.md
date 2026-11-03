@@ -164,7 +164,8 @@ response: {"question", "model", "modelId", "revision", "topK",
   takes 0.2-3 s per model, and the very first request about 6 s, mostly loading PyTorch.
 
 `tests/test_retrieval.py` has fast API tests with a stand-in model, and opt-in comparisons
-with the research's recorded results (`-m models`).
+with the research's recorded results (`-m models`). The research's retrieval metrics are
+reproduced in `tests/test_retrieval_metrics.py` (see [Retrieval metrics](#retrieval-metrics)).
 
 ## LLM providers
 
@@ -291,6 +292,33 @@ uv run python -m medquery_api.evaluation [PATH]
 
 `GET /api/evaluation/dataset` returns the bundled dataset in camelCase. It needs no research
 data folder. If the file is invalid it answers 503, and the details go to the server log.
+
+## Retrieval metrics
+
+`medquery_api.evaluation.retrieval_metrics` (PRD 4.1) scores retrieval on the evaluation
+dataset with Precision@K, Recall@K, MRR@K and nDCG@K, using notebook 06's formula functions
+copied unchanged: relevance is by article, and an article counts once however many of its
+chunks are retrieved. It uses the local models only and makes no API calls:
+
+```
+uv run python -m medquery_api.evaluation.retrieval_metrics [--model MPNet] [--k 5] [--out results.json]
+```
+
+For each model (all four by default) it prints:
+
+- the mean of each metric over the in-scope questions, and each question's scores;
+- **exact ties:** chunks with identical text score exactly the same. Scores use the backend's
+  order (lower row first), and the report gives the range obtainable by reordering only those
+  chunks, since the research's FAISS search ordered them differently;
+- **the archived results (historical), at K = 5:** whether each is reproduced by the backend's
+  order, only by reordering exactly tied chunks, or not at all;
+- **the top similarity score of each question,** for the in-scope and out-of-scope questions
+  separately (count, lowest, median, highest). Scores are comparable only within one model,
+  and no cut-off is set or implied.
+
+`--out` writes everything as JSON, and refuses any path inside `Healthcare_RAG/`.
+`tests/test_retrieval_metrics.py` checks the formulas against hand-worked examples, and
+(opt-in, `-m models`) reproduces all 40 archived results through this code.
 
 ## Research pipeline checks
 
