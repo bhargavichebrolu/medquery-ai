@@ -121,7 +121,7 @@ What RAG can and cannot do:
 - A **citation** shows which chunk the model drew on. It does **not** prove the answer is
   correct: the model can cite a relevant chunk and still summarise it badly. Citation checks
   and grounding coverage (below) are checks, not proof; answer quality is scored separately
-  in Part 4.2.
+  in Part 4.2 (planned in [`part-4-evaluation.md`](part-4-evaluation.md)).
 - The model can still decline to answer (a **refusal**), which the application must handle
   as a clear message, never as a made-up answer.
 
@@ -165,17 +165,18 @@ and approved separately; notes in the table record what has since been implement
 | Refusals | If the model refuses, the user gets a clear message, never an invented answer. Anthropic's server-side fallback for refused requests is to be used; its details are to be verified against the live API documentation in PRD 3.1. **Implemented in PRD 3.1:** `fallbacks: "default"` with beta `server-side-fallback-2026-07-01` (the form Sonnet 5.5 accepts on the Claude API); the result records whether a fallback model answered and which. |
 | Context | Each retrieved chunk is passed as its own document, verbatim (never edited or summarised), titled with its article and chunk number, with the API's citations enabled. The question comes after the documents. The research's rules carry over: answer only from the documents, no diagnosis or prescribing, keep NHS emergency guidance word for word, and say clearly when the documents are not enough. |
 | Citations | Each citation maps to one retrieved chunk (`sourceFile`, `chunkId`, rank, score). The backend checks every citation: it must point to a real retrieved chunk, and its quoted text must match that chunk exactly; failing citations are dropped and counted. These are checks, not proof of correctness. **Implemented in PRD 3.4:** a citation must name a retrieved document, its character range must lie inside that chunk, and the chunk's text over that range must equal the quoted text exactly; the answer reports citations returned, valid and dropped by reason, the validity rate, and grounding coverage. |
-| Not enough evidence | The model is instructed to say so; as a safety net, an answer with no valid citations is never shown as grounded, and unsupported parts of an answer are marked. No similarity-score cut-off until Part 4 calibrates one, because scores are not comparable between models. **Implemented in PRD 3.6:** every answer gets a grounding status (`grounded`, `partly_grounded`, `not_grounded`, `not_enough_evidence` for exactly the required sentence, or `refused`) and each sentence's position with whether it has a valid citation. The Chat page warns about not-grounded answers, marks unsupported sentences "No valid citation", and shows "not enough evidence" as a plain message. Only the exact sentence (ignoring surrounding whitespace) counts as not enough evidence: a reworded or extended reply is judged by its citations instead, so at worst it is shown with a warning, never hidden or shown as grounded. The approved out-of-scope questions are listed below. |
+| Not enough evidence | The model is instructed to say so; as a safety net, an answer with no valid citations is never shown as grounded, and unsupported parts of an answer are marked. No similarity-score cut-off, because scores are not comparable between models; Part 4.1 reports score distributions without applying one (see [`part-4-evaluation.md`](part-4-evaluation.md)). **Implemented in PRD 3.6:** every answer gets a grounding status (`grounded`, `partly_grounded`, `not_grounded`, `not_enough_evidence` for exactly the required sentence, or `refused`) and each sentence's position with whether it has a valid citation. The Chat page warns about not-grounded answers, marks unsupported sentences "No valid citation", and shows "not enough evidence" as a plain message. Only the exact sentence (ignoring surrounding whitespace) counts as not enough evidence: a reworded or extended reply is judged by its citations instead, so at worst it is shown with a warning, never hidden or shown as grounded. The approved out-of-scope questions are listed below. |
 | Privacy | The notice below is shown wherever the hosted provider is used. |
 | Testing | Ordinary tests use the mock provider: no API key, no network call, no cost. Tests that call the real model are opt-in, run only after approval of their cost, and report what they spent. |
 | Secrets | API credentials come only from the environment (or an `ant auth login` profile); they are never committed, logged or sent to the frontend. |
 | Measures | Part 3: latency (retrieval, generation, total), tokens and estimated cost per answer, citation validity, grounding coverage, and correct refusals for out-of-scope questions. Part 4.2: answer quality (faithfulness, relevance, correctness). |
 | Archive | Read-only, as in every milestone: nothing is written to `Healthcare_RAG/`. |
 
-**Out-of-scope questions** (approved at the PRD 3.6 review; not yet in code). They will join
-the evaluation set in the milestone that implements it. The mock provider always cites, so a
-mock run only tests the plumbing; real-model behaviour needs an approved paid Claude run, and
-none has been approved.
+**Out-of-scope questions** (approved at the PRD 3.6 review). Since PRD 4.0 they are in the
+evaluation dataset, with their acceptance criteria word for word (see
+[`part-4-evaluation.md`](part-4-evaluation.md)); nothing runs or scores them yet. The mock
+provider always cites, so a mock run only tests the plumbing; real-model behaviour needs an
+approved paid Claude run, and none has been approved.
 
 | # | Question | Passes when |
 |---|---|---|

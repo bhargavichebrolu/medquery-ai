@@ -89,6 +89,11 @@ export class ApiError extends Error {
   }
 }
 
+export function asApiError(error: unknown, message: string): ApiError {
+  // Unknown errors are never shown as they are: they could contain internal details.
+  return error instanceof ApiError ? error : new ApiError('unexpected', message)
+}
+
 const isNumber = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value)
 const isWholeNumber = (value: unknown): value is number => Number.isInteger(value)
 
@@ -414,6 +419,108 @@ export async function askQuestion(
     'The backend cannot answer questions right now.',
   )
   if (!isAnswerResponse(body)) {
+    throw new ApiError('unexpected', UNEXPECTED_FORMAT)
+  }
+  return body
+}
+
+// ---------- Evaluation dataset (GET /api/evaluation/dataset, PRD 4.0) ----------
+
+// Historical text from the research, not ground truth: no reference answer has been checked.
+export interface ReferenceAnswer {
+  text: string
+  status: 'unverified'
+  source: string
+}
+
+// A question the knowledge base can answer, with the articles that are relevant to it.
+export interface InScopeQuestion {
+  id: string
+  question: string
+  relevantArticles: string[] // article file names, such as "asthma.txt"
+  referenceAnswer: ReferenceAnswer | null
+  archiveQuestionId: number | null // the research's question number, when it has one
+  source: string
+}
+
+// A question that should not get an ordinary answer, with its approved acceptance criteria.
+export interface OutOfScopeQuestion {
+  id: string
+  question: string
+  reason: string
+  acceptanceCriteria: string
+  automaticPassStatuses: Grounding[] // outcomes that pass without review
+  otherwise: 'fail' | 'manual_review' // what any other outcome means
+  source: string
+}
+
+export interface EvaluationDataset {
+  identifier: string // "sha256:" and a hash of the content: a new identifier for any change
+  formatVersion: number
+  name: string
+  description: string
+  relevanceLevel: 'article'
+  inScopeQuestions: InScopeQuestion[]
+  outOfScopeQuestions: OutOfScopeQuestion[]
+}
+
+const isStringList = (value: unknown): value is string[] =>
+  Array.isArray(value) && value.every((item) => typeof item === 'string')
+
+function isInScopeQuestion(value: unknown): value is InScopeQuestion {
+  if (!isObject(value)) return false
+  const reference = value.referenceAnswer
+  return (
+    typeof value.id === 'string' &&
+    typeof value.question === 'string' &&
+    isStringList(value.relevantArticles) &&
+    (reference === null ||
+      (isObject(reference) &&
+        typeof reference.text === 'string' &&
+        reference.status === 'unverified' &&
+        typeof reference.source === 'string')) &&
+    (value.archiveQuestionId === null || isWholeNumber(value.archiveQuestionId)) &&
+    typeof value.source === 'string'
+  )
+}
+
+function isOutOfScopeQuestion(value: unknown): value is OutOfScopeQuestion {
+  return (
+    isObject(value) &&
+    typeof value.id === 'string' &&
+    typeof value.question === 'string' &&
+    typeof value.reason === 'string' &&
+    typeof value.acceptanceCriteria === 'string' &&
+    Array.isArray(value.automaticPassStatuses) &&
+    value.automaticPassStatuses.every((status) => (GROUNDINGS as readonly unknown[]).includes(status)) &&
+    (value.otherwise === 'fail' || value.otherwise === 'manual_review') &&
+    typeof value.source === 'string'
+  )
+}
+
+function isEvaluationDataset(value: unknown): value is EvaluationDataset {
+  return (
+    isObject(value) &&
+    typeof value.identifier === 'string' &&
+    isWholeNumber(value.formatVersion) &&
+    typeof value.name === 'string' &&
+    typeof value.description === 'string' &&
+    value.relevanceLevel === 'article' &&
+    Array.isArray(value.inScopeQuestions) &&
+    value.inScopeQuestions.every(isInScopeQuestion) &&
+    Array.isArray(value.outOfScopeQuestions) &&
+    value.outOfScopeQuestions.every(isOutOfScopeQuestion)
+  )
+}
+
+// The questions Part 4 evaluates with. Read-only: nothing is run or scored.
+export async function fetchEvaluationDataset(signal?: AbortSignal): Promise<EvaluationDataset> {
+  const body = await requestJson(
+    '/api/evaluation/dataset',
+    { signal },
+    'The backend cannot show the evaluation dataset right now.',
+  )
+  if (!isEvaluationDataset(body)) {
     throw new ApiError('unexpected', UNEXPECTED_FORMAT)
   }
   return body

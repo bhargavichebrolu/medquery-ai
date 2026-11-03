@@ -101,3 +101,29 @@ describe('researchResults.ts matches the original research files exactly', () =>
     expect(LATER_RUN_MEAN_GENERATION_SECONDS).toBeCloseTo(mean, 12)
   })
 })
+
+// The backend's evaluation dataset (PRD 4.0) holds the same 10 research questions. It is tracked
+// in git, so this check runs on any copy of the repository and the two copies cannot drift.
+const DATASET_FILE = join(
+  dirname(fileURLToPath(import.meta.url)),
+  '../../../backend/src/medquery_api/evaluation/datasets/research_evaluation.json',
+)
+
+interface DatasetQuestion {
+  archive_question_id?: number | null
+  question: string
+  relevant_articles: string[]
+}
+
+describe('EVALUATION_QUESTIONS matches the backend evaluation dataset', () => {
+  it('has the same research questions, in the same order, with the same relevant articles', () => {
+    const dataset: { in_scope_questions: DatasetQuestion[] } = JSON.parse(readFileSync(DATASET_FILE, 'utf8'))
+    // Only the research's own questions; any later in-scope questions have no research number.
+    const research = dataset.in_scope_questions.filter((q) => q.archive_question_id != null)
+
+    expect(research).toHaveLength(10)
+    expect(
+      research.map((q) => ({ id: q.archive_question_id, question: q.question, articles: q.relevant_articles })),
+    ).toEqual(EVALUATION_QUESTIONS.map((q) => ({ id: q.id, question: q.question, articles: [q.relevantArticle] })))
+  })
+})

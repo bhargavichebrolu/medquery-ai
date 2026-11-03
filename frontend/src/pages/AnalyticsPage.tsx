@@ -1,4 +1,5 @@
 import BarChart from '../components/BarChart'
+import EvaluationDatasetSection from '../components/EvaluationDatasetSection'
 import StatCard from '../components/StatCard'
 import { EMBEDDING_MODELS, type ModelId } from '../data/embeddingModels'
 import {
@@ -388,6 +389,8 @@ function AnalyticsPage() {
           </li>
         </ul>
       </section>
+
+      <EvaluationDatasetSection />
     </>
   )
 }

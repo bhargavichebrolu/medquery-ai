@@ -30,7 +30,7 @@ use `npm.cmd` instead of `npm` (for example `npm.cmd run dev`).
 | Retrieval | `/retrieval` | Ask a question and see the chunks a model retrieves, with similarity scores (needs the backend) |
 | Knowledge Base | `/knowledge-base` | The 698 research articles and their metadata |
 | Model Lab | `/model-lab` | Choose one of the four embedding models |
-| Analytics | `/analytics` | The research's historical retrieval results |
+| Analytics | `/analytics` | The research's historical retrieval results, and the current application evaluation dataset (needs the backend for the dataset only) |
 
 The Retrieval page calls the backend's `POST /api/retrieve` through the development server
 (see `../backend/README.md`), so start both. Its search is kept in the address

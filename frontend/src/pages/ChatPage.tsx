@@ -1,15 +1,16 @@
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
 import {
   ApiError,
+  asApiError,
   askQuestion,
   fetchLlmConfig,
-  START_COMMAND,
   type AnswerResponse,
   type Grounding,
   type LlmConfig,
   type RetrievalRequest,
 } from '../api'
 import ChatAnswer from '../components/ChatAnswer'
+import ErrorPanel from '../components/ErrorPanel'
 import ModelOption from '../components/ModelOption'
 import { EMBEDDING_MODELS } from '../data/embeddingModels'
 import { EVALUATION_QUESTIONS } from '../data/researchResults'
@@ -47,31 +48,6 @@ const GROUNDING_STATUS: Record<Grounding, string> = {
 }
 
 const TOP_K_CHOICES =Array.from({ length: TOP_K_MAX - TOP_K_MIN + 1 }, (_, i) => TOP_K_MIN + i)
-
-function asApiError(error: unknown, message: string): ApiError {
-  // Unknown errors are never shown as they are: they could contain internal details.
-  return error instanceof ApiError ? error : new ApiError('unexpected', message)
-}
-
-function ErrorPanel({ title, error, onRetry }: { title: string; error: ApiError; onRetry?: () => void }) {
-  return (
-    <div className="config-panel retrieval-status" role="alert">
-      <p className="status-line">{error.kind === 'unreachable' ? 'Backend not available' : title}</p>
-      <p>{error.message}</p>
-      {error.kind === 'unreachable' && (
-        <>
-          <p>Start it in a second terminal, then try again:</p>
-          <pre className="command">{START_COMMAND}</pre>
-        </>
-      )}
-      {onRetry && (
-        <button type="button" className="button-secondary" onClick={onRetry}>
-          Try again
-        </button>
-      )}
-    </div>
-  )
-}
 
 // One question, one answer. Questions are not kept in the address, so a refresh or a shared
 // link never sends a question (which can cost money with a hosted model), and each question is

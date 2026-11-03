@@ -2,6 +2,7 @@
 
 import logging
 from collections.abc import Callable
+from dataclasses import asdict
 from pathlib import Path
 from typing import Annotated, Literal
 
@@ -13,6 +14,7 @@ from medquery_api import config
 from medquery_api.answering import answer_question
 from medquery_api.dataset import DataFolderNotFoundError, summarise_dataset
 from medquery_api.embeddings.query import QueryEmbedder, QueryModelUnavailableError
+from medquery_api.evaluation import DEFAULT_DATASET, EvaluationDatasetError, load_dataset
 from medquery_api.knowledge_base import (
     IndexFormatError,
     KnowledgeBase,
@@ -21,6 +23,7 @@ from medquery_api.knowledge_base import (
     load_knowledge_base,
 )
 from medquery_api.llm import LLMProvider, LLMUnavailableError, create_provider
+from medquery_api.llm.citations import Grounding
 from medquery_api.retrieval import retrieve
 
 app = FastAPI(title="MedQuery AI API", version="0.1.0")
@@ -209,9 +212,49 @@ class AnswerResponse(CamelModel):
     timings: AnswerTimings
 
 
+class ReferenceAnswerModel(CamelModel):
+    text: str
+    status: Literal["unverified"]  # historical text, not ground truth
+    source: str
+
+
+class InScopeQuestionModel(CamelModel):
+    id: str
+    question: str
+    relevant_articles: list[str]
+    reference_answer: ReferenceAnswerModel | None
+    archive_question_id: int | None
+    source: str
+
+
+class OutOfScopeQuestionModel(CamelModel):
+    id: str
+    question: str
+    reason: str
+    acceptance_criteria: str
+    automatic_pass_statuses: list[Grounding]
+    otherwise: Literal["fail", "manual_review"]
+    source: str
+
+
+class EvaluationDatasetResponse(CamelModel):
+    identifier: str
+    format_version: int
+    name: str
+    description: str
+    relevance_level: Literal["article"]
+    in_scope_questions: list[InScopeQuestionModel]
+    out_of_scope_questions: list[OutOfScopeQuestionModel]
+
+
 def get_data_dir() -> Path:
     """Supplied to endpoints by FastAPI; tests replace it with a temporary folder."""
     return config.data_dir()
+
+
+def get_evaluation_dataset_path() -> Path:
+    """The evaluation dataset file; tests replace it."""
+    return DEFAULT_DATASET
 
 
 def get_knowledge_base_loader(
@@ -289,6 +332,23 @@ def llm_config(
 ) -> LLMConfigResponse:
     """Which LLM answers questions, so the frontend can show the right privacy notice."""
     return LLMConfigResponse(provider=provider.name, model=provider.model)
+
+
+@app.get("/api/evaluation/dataset", response_model=EvaluationDatasetResponse)
+def evaluation_dataset(
+    path: Annotated[Path, Depends(get_evaluation_dataset_path)],
+) -> EvaluationDatasetResponse:
+    """The evaluation dataset (PRD 4.0), read-only. It needs no research data folder."""
+    try:
+        dataset = load_dataset(path)
+    except EvaluationDatasetError as error:
+        logger.error("%s", error)
+        raise HTTPException(
+            status_code=503,
+            detail="The evaluation dataset file is not valid, so it cannot be shown. Run "
+            "`uv run python -m medquery_api.evaluation` in the backend folder to see what to fix.",
+        ) from error
+    return EvaluationDatasetResponse.model_validate(asdict(dataset))
 
 
 @app.post("/api/retrieve", response_model=RetrieveResponse)

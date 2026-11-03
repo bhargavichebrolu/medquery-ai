@@ -703,6 +703,72 @@ h3.placeholder-label {
   color: var(--text-strong);
 }
 
+/* Evaluation dataset (PRD 4.0) */
+.dataset-facts {
+  margin-bottom: 8px;
+}
+
+.dataset-id {
+  white-space: nowrap;
+}
+
+.tag-unverified {
+  border-style: dashed;
+  border-color: var(--text);
+}
+
+/* Narrow screens: each question becomes a card listing every field under its label, so
+   nothing needs sideways scrolling. The markup's explicit table roles keep these tables
+   tables for screen readers, which also still hear the (visually hidden) column headers;
+   the visible labels are given empty alternative text so they are not read twice. */
+@media (max-width: 640px) {
+  .dataset-table-box {
+    overflow-x: visible;
+  }
+
+  .dataset-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .dataset-table,
+  .dataset-table tbody,
+  .dataset-table tr,
+  .dataset-table th,
+  .dataset-table td {
+    display: block;
+  }
+
+  .dataset-table tbody tr {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .dataset-table tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .dataset-table tbody th,
+  .dataset-table tbody td {
+    padding: 2px 0;
+    border-bottom: none;
+  }
+
+  .dataset-table td[data-label]:not(.dataset-id)::before {
+    content: attr(data-label);
+    content: attr(data-label) / '';
+    display: block;
+    margin-top: 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-strong);
+  }
+}
+
 /* ---------- Knowledge Base ---------- */
 
 .after-paragraph {

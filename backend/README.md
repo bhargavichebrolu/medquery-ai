@@ -1,6 +1,6 @@
 # MedQuery AI: backend
 
-A small [FastAPI](https://fastapi.tiangolo.com/) service with four endpoints:
+A small [FastAPI](https://fastapi.tiangolo.com/) service with these endpoints:
 
 | Endpoint | Returns |
 |---|---|
@@ -9,6 +9,7 @@ A small [FastAPI](https://fastapi.tiangolo.com/) service with four endpoints:
 | `POST /api/retrieve` | The research chunks most similar to a question, with scores (see [Retrieval](#retrieval)) |
 | `GET /api/llm` | The configured LLM provider and model (`{"provider": "mock", "model": "mock"}`); no credentials or other settings |
 | `POST /api/answer` | An answer generated from the retrieved chunks, with their sources (see [Grounded answers](#grounded-answers)) |
+| `GET /api/evaluation/dataset` | The evaluation dataset, read-only (see [Evaluation dataset](#evaluation-dataset)) |
 
 The backend only **reads** the research archive; it never writes to it.
 
@@ -248,6 +249,48 @@ answers (mock by default; a paid provider needs `--allow-paid-calls`):
 ```
 uv run python -m medquery_api.answering review [--out answers.json]
 ```
+
+## Evaluation dataset
+
+`medquery_api.evaluation` (PRD 4.0) defines the file format for the questions Part 4 evaluates
+with, and loads and checks it. The plan is in
+[`docs/part-4-evaluation.md`](../docs/part-4-evaluation.md). The bundled dataset,
+`src/medquery_api/evaluation/datasets/research_evaluation.json`, holds:
+
+- **10 in-scope questions:** the research's evaluation questions (notebook 06, cell 28), each
+  with its relevant article and its reference answer from
+  `results/ragas_evaluation_dataset.json`. Reference answers are marked `unverified`: nobody
+  has recorded checking them, so they are not ground truth.
+- **8 out-of-scope questions:** the ones approved at the PRD 3.6 review, with their acceptance
+  criteria word for word.
+
+The format (version 1), one UTF-8 JSON object:
+
+| Field | Meaning |
+|---|---|
+| `format_version` | `1`, the only version this code reads |
+| `name`, `description` | Text |
+| `relevance_level` | `"article"`: a retrieved chunk is relevant when its article is one of the question's relevant articles, as in notebook 06. Chunk-level labels are not supported. |
+| `in_scope_questions` | Each has an `id` (such as `research-1`), the `question`, `relevant_articles` (file names such as `asthma.txt`), an optional `reference_answer` (`text`, `status` (only `unverified`), `source`), an optional `archive_question_id` (the research's question number) and a `source` |
+| `out_of_scope_questions` | Each has an `id`, the `question`, the `reason` it is out of scope, the approved `acceptance_criteria`, `automatic_pass_statuses` (grounding statuses that pass without review; may be empty), `otherwise` (`fail`, or `manual_review` when a person must judge any other outcome) and a `source` |
+
+**Identifier:** `sha256:` followed by a hash of the content, with keys sorted and formatting
+ignored. Reformatting the file keeps the identifier, and changing any value gives a new one,
+so a result can record exactly which dataset it used.
+
+**Checks:** unknown or missing fields, wrong types, empty text, badly formed ids and article
+names, duplicates (ids, questions, articles, statuses), unknown grounding statuses, and
+out-of-scope questions that could never pass are all reported at once, each saying where it is
+and what to change. A different `format_version` stops the check, since its layout may differ.
+To check a file, and its relevant articles against the 698 articles in the knowledge base when
+the research data folder is present:
+
+```
+uv run python -m medquery_api.evaluation [PATH]
+```
+
+`GET /api/evaluation/dataset` returns the bundled dataset in camelCase. It needs no research
+data folder. If the file is invalid it answers 503, and the details go to the server log.
 
 ## Research pipeline checks
 
