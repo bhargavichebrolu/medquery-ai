@@ -1148,6 +1148,126 @@ h3.placeholder-label {
   border-style: dashed;
 }
 
+/* ---------- Chat ---------- */
+
+.chat-mode {
+  margin-bottom: 24px;
+}
+
+.chat-answer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-wrap: anywhere;
+}
+
+.chat-answer h2 {
+  margin: 0;
+}
+
+/* The answer as the model wrote it: its line breaks kept, nothing rendered as markup. */
+.answer-text {
+  padding: 16px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: 10px;
+  color: var(--text-strong);
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+
+.citation-marker {
+  display: inline-block;
+  min-width: 24px;
+  min-height: 24px;
+  margin-left: 3px;
+  padding: 0 5px;
+  box-sizing: border-box;
+  border-radius: 999px;
+  background: var(--accent-tint);
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 24px;
+  text-align: center;
+  text-decoration: none;
+  vertical-align: text-top;
+}
+
+.citation-marker:hover {
+  text-decoration: underline;
+}
+
+.citation-marker:focus-visible,
+.source-card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* A source reached from a citation marker is outlined while it has focus. */
+.source-card:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.source-label {
+  padding: 0 8px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--surface);
+  font-weight: 700;
+}
+
+.source-card mark {
+  background: var(--accent-tint);
+  color: var(--text-strong);
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+.answer-checks,
+.answer-details,
+.answer-status {
+  gap: 8px;
+}
+
+/* Grounding (PRD 3.6): the note before the answer, and sentences without a valid citation. */
+.grounding-note {
+  color: var(--text-strong);
+}
+
+.grounding-warning {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.unsupported {
+  text-decoration: underline dashed var(--text);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+.tag-unsupported {
+  display: inline-block;
+  margin-left: 4px;
+  border-style: dashed;
+  border-color: var(--text);
+  font-size: 0.7rem;
+  line-height: 1.6;
+  white-space: nowrap;
+  vertical-align: text-top;
+}
+
+.answer-checks .subsection-heading,
+.answer-details .subsection-heading {
+  margin: 0;
+}
+
+.chat-answer > .subsection-heading {
+  margin: 8px 0 0;
+}
+
 @media (max-width: 560px) {
   .config-list {
     grid-template-columns: 1fr;

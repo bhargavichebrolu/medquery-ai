@@ -1,12 +1,14 @@
 # MedQuery AI: backend
 
-A small [FastAPI](https://fastapi.tiangolo.com/) service with three endpoints:
+A small [FastAPI](https://fastapi.tiangolo.com/) service with four endpoints:
 
 | Endpoint | Returns |
 |---|---|
 | `GET /api/health` | `{"status": "ok"}` when the service is running |
 | `GET /api/dataset/summary` | Article, chunk and embedding-index counts, counted live from `Healthcare_RAG/data` |
 | `POST /api/retrieve` | The research chunks most similar to a question, with scores (see [Retrieval](#retrieval)) |
+| `GET /api/llm` | The configured LLM provider and model (`{"provider": "mock", "model": "mock"}`); no credentials or other settings |
+| `POST /api/answer` | An answer generated from the retrieved chunks, with their sources (see [Grounded answers](#grounded-answers)) |
 
 The backend only **reads** the research archive; it never writes to it.
 
@@ -162,6 +164,90 @@ response: {"question", "model", "modelId", "revision", "topK",
 
 `tests/test_retrieval.py` has fast API tests with a stand-in model, and opt-in comparisons
 with the research's recorded results (`-m models`).
+
+## LLM providers
+
+`medquery_api.llm` (PRD 3.1) is one interface for generating answers, with two providers:
+
+| Provider | What it does | Needs |
+|---|---|---|
+| `mock` (default) | Answers by quoting and citing the first document, or says the evidence is not enough; tests can script any result | Nothing: no network, no key, no cost |
+| `claude` | Claude through Anthropic's Messages API: each document sent verbatim with citations enabled, the question after them, refusals re-run on Anthropic's recommended fallback model | Anthropic credentials and money per call |
+
+```python
+from medquery_api.llm import GenerationRequest, SourceDocument, create_provider
+
+provider = create_provider()  # MEDQUERY_LLM_PROVIDER, default "mock"
+result = provider.generate(
+    GenerationRequest(
+        system="Answer only from the documents.",
+        documents=(SourceDocument(title="Asthma (chunk 1)", text=chunk_text),),
+        question="What does asthma affect?",
+    )
+)
+result.text, result.parts[0].citations, result.usage, result.refused
+```
+
+| Setting | Default | Meaning |
+|---|---|---|
+| `MEDQUERY_LLM_PROVIDER` | `mock` | `mock` or `claude` |
+| `MEDQUERY_LLM_MODEL` | `claude-sonnet-5-5` | Claude model |
+| `MEDQUERY_LLM_EFFORT` | `low` | `low`, `medium`, `high`, `xhigh` or `max` |
+
+Credentials are never read or stored by this code: the `anthropic` SDK finds them itself
+(`ANTHROPIC_API_KEY`, `ANTHROPIC_AUTH_TOKEN`, or an `ant auth login` profile). Keep them out of
+the repository (`.env` files are already ignored). Every API failure becomes an
+`LLMUnavailableError` whose message is safe to show: it contains no credentials or request
+text. The SDK is imported only when Claude is actually called.
+
+`tests/test_llm.py` runs without any credentials. Its one real-API test is opt-in and costs
+money: `uv run pytest -m llm -rP`.
+
+`medquery_api.llm.context` (PRD 3.2) turns a retrieval (`POST /api/retrieve`'s result) into a
+request: the research's answering rules as instructions, each retrieved chunk verbatim as a
+document titled "\<article title\> (chunk N of M)" in rank order, then the question.
+`build_context(...).source_for(i)` says which chunk document *i* came from, so citations can be
+traced back; `render_plain_text` gives the same sources labelled [S1]...[Sn] for providers
+without built-in citations.
+
+## Grounded answers
+
+`POST /api/answer` (PRD 3.3) takes the same request as `/api/retrieve` (`question`, `model`,
+`topK`), retrieves the chunks, builds the context (`llm.context`) and asks the configured LLM
+provider (`MEDQUERY_LLM_PROVIDER`, default `mock`) to answer from them. The response gives:
+
+- `parts`: the answer text, each part with its **valid** citations, labelled with the source
+  they cite (`S1`...). `citationStatus: "checked"` (PRD 3.4): `llm.citations` keeps a citation
+  only if it names a retrieved source, its character range lies inside that chunk, and the
+  chunk's text over that range equals the quoted text exactly.
+- `grounding` (PRD 3.6): `refused`; `not_enough_evidence` when the whole answer is exactly the
+  sentence the instructions require; otherwise `not_grounded` (no sentence has a valid
+  citation, so the answer is never presented as grounded), `grounded` (every sentence has one)
+  or `partly_grounded`. `sentences` gives each sentence's `start` and `end` (code points in the
+  answer's parts joined, without surrounding whitespace) and whether it is `supported`.
+- `droppedCitations`: every citation that failed, as the provider returned it, with the answer
+  part it came from and the reason (`unknown_document`, `invalid_range`, `text_mismatch`).
+- `citationCheck`: citations returned, valid and dropped by reason; the validity rate; and
+  **grounding coverage**, the share of answer sentences with at least one valid citation
+  (sentence rule in `llm/citations.py`). These are checks, not proof: a valid citation quotes
+  its source exactly, but that does not show the answer is correct.
+- `sources`: the retrieved chunks the model saw, verbatim, with label, rank, score, file,
+  chunk number and article title.
+- `llm` (provider, the model that answered, whether a fallback model ran), `stopReason`,
+  `refused`, `refusalCategory`, token `usage`.
+- `cost`: an estimate from `pricing.py`'s dated price table (Sonnet 5.5 checked on
+  2 November 2026); none for a model without a checked price; $0 for the mock.
+- `timings`: model load, embedding, search, generation and total, in milliseconds.
+
+Invalid requests get 422 before anything runs; missing data or models and provider failures
+get 503 with safe messages. Question text is never logged.
+
+The research's 10 evaluation questions can be answered for review, next to the archived Llama
+answers (mock by default; a paid provider needs `--allow-paid-calls`):
+
+```
+uv run python -m medquery_api.answering review [--out answers.json]
+```
 
 ## Research pipeline checks
 

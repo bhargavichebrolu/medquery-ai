@@ -5,6 +5,7 @@ description = "MedQuery AI backend: a FastAPI service that reads the research ar
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "anthropic>=2.4.0",
     "fastapi>=0.162.0",
     "numpy>=2.4.6",
     "sentence-transformers>=6.2.0",
@@ -25,10 +26,12 @@ build-backend = "uv_build"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 # -ra lists the reason for every skipped test in the summary.
-# Tests that load real embedding models are opt-in: run them with `pytest -m models`.
-addopts = "-ra -m 'not models'"
+# Tests that load real embedding models or call a real LLM are opt-in: run them with
+# `pytest -m models` or `pytest -m llm` (the latter costs money; approve it first).
+addopts = "-ra -m 'not models and not llm'"
 markers = [
     "models: loads real embedding models from the local cache (opt-in: pytest -m models)",
+    "llm: calls a real LLM API and costs money (opt-in: pytest -m llm)",
 ]
 
 [tool.ruff]

@@ -1,14 +1,11 @@
 import { Link } from 'react-router'
 import type { RetrievalResponse, RetrievedChunk } from '../api'
 import { ARTICLES } from '../data/knowledgeBase'
+import { formatMs } from '../format'
 import { PAGES } from '../navigation'
 
 // Articles by their file name ("asthma.txt"), for titles and links.
 const ARTICLES_BY_FILE = new Map(ARTICLES.map((article) => [`${article.id}.txt`, article]))
-
-function formatMs(ms: number) {
-  return ms >= 1000 ? `${(ms / 1000).toFixed(1)} s` : `${ms.toFixed(1)} ms`
-}
 
 // A result is tied when its score exactly equals a neighbour's.
 function isTied(results: RetrievedChunk[], index: number) {

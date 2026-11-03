@@ -10,6 +10,7 @@ from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 from pydantic.alias_generators import to_camel
 
 from medquery_api import config
+from medquery_api.answering import answer_question
 from medquery_api.dataset import DataFolderNotFoundError, summarise_dataset
 from medquery_api.embeddings.query import QueryEmbedder, QueryModelUnavailableError
 from medquery_api.knowledge_base import (
@@ -19,6 +20,7 @@ from medquery_api.knowledge_base import (
     KnowledgeBaseNotFoundError,
     load_knowledge_base,
 )
+from medquery_api.llm import LLMProvider, LLMUnavailableError, create_provider
 from medquery_api.retrieval import retrieve
 
 app = FastAPI(title="MedQuery AI API", version="0.1.0")
@@ -81,6 +83,132 @@ class RetrieveResponse(CamelModel):
     timings: RetrievalTimings
 
 
+class LLMConfigResponse(CamelModel):
+    """The configured LLM provider and model, and nothing else (no credentials or settings)."""
+
+    provider: str  # "mock" or "claude"
+    model: str  # the model requested; a fallback model may answer instead (see LLMInfo)
+
+
+class AnswerRequest(RetrieveRequest):
+    """The same question, embedding model and topK rules as POST /api/retrieve."""
+
+
+class ProviderCitation(CamelModel):
+    """A citation that passed its checks: the quoted text is exactly that span of the source."""
+
+    document_index: int
+    source_label: str  # the cited source ("S1"...); see `sources`
+    cited_text: str
+    start_char: int
+    end_char: int
+
+
+class DroppedCitationModel(CamelModel):
+    """A citation that failed its checks, as the provider returned it."""
+
+    part_index: int  # the answer part that carried it
+    document_index: int | None  # None when the provider sent something other than a number
+    cited_text: str | None
+    start_char: int | None
+    end_char: int | None
+    reason: Literal["unknown_document", "invalid_range", "text_mismatch"]
+
+
+class DroppedByReason(CamelModel):
+    unknown_document: int
+    invalid_range: int
+    text_mismatch: int
+
+
+class CitationCheckModel(CamelModel):
+    """Checks, not proof: a valid citation quotes its source exactly; it does not show the
+    answer is correct."""
+
+    total: int  # citations the provider returned
+    valid: int
+    dropped: DroppedByReason
+    validity_rate: float | None  # valid / total; None when there were no citations
+    sentences: int
+    supported_sentences: int  # sentences with at least one valid citation
+    grounding_coverage: float | None  # supported_sentences / sentences; None for no sentences
+
+
+class AnswerSentenceModel(CamelModel):
+    # Character positions (code points) in the whole answer, all parts' text joined.
+    start: int
+    end: int
+    supported: bool  # at least one valid citation supports this sentence
+
+
+class AnswerPartModel(CamelModel):
+    text: str
+    citations: list[ProviderCitation]
+
+
+class AnswerSource(CamelModel):
+    label: str
+    rank: int
+    score: float
+    source_file: str
+    chunk_id: int
+    article_title: str
+    chunk_count: int
+    title: str  # the title the provider saw, e.g. "Asthma (chunk 2 of 14)"
+    text: str  # verbatim chunk text
+
+
+class LLMInfo(CamelModel):
+    provider: str
+    model: str  # the model that produced the answer
+    fell_back: bool  # a fallback model answered after the requested model declined
+
+
+class TokenUsageModel(CamelModel):
+    input_tokens: int
+    output_tokens: int
+    cache_read_input_tokens: int
+    cache_creation_input_tokens: int
+
+
+class CostModel(CamelModel):
+    estimated_usd: float | None  # None when no checked price is known
+    prices_checked_on: str | None
+    note: str
+
+
+class AnswerTimings(CamelModel):
+    model_load_ms: float
+    embedding_ms: float
+    search_ms: float
+    generation_ms: float
+    total_ms: float
+
+
+class AnswerResponse(CamelModel):
+    question: str
+    embedding_model: str
+    top_k: int
+    llm: LLMInfo
+    parts: list[AnswerPartModel]  # only valid citations are kept
+    # How far valid citations support the answer; see llm/citations.py. Only "grounded" means
+    # every sentence has a valid citation, and that is still a check, not proof.
+    grounding: Literal[
+        "grounded", "partly_grounded", "not_grounded", "not_enough_evidence", "refused"
+    ]
+    sentences: list[AnswerSentenceModel]
+    citation_status: Literal["checked"]
+    citation_check: CitationCheckModel
+    dropped_citations: list[DroppedCitationModel]
+    sources: list[AnswerSource]
+    stop_reason: str
+    refused: bool
+    refusal_category: str | None
+    usage: TokenUsageModel
+    cost: CostModel
+    timings: AnswerTimings
+
+
 def get_data_dir() -> Path:
     """Supplied to endpoints by FastAPI; tests replace it with a temporary folder."""
     return config.data_dir()
@@ -99,6 +227,39 @@ _query_embedder = QueryEmbedder()
 def get_query_embedder() -> QueryEmbedder:
     """The process's query embedder (it loads models only when used)."""
     return _query_embedder
+
+
+_llm_provider: LLMProvider | None = None
+
+
+def get_llm_provider() -> LLMProvider:
+    """The configured LLM provider (MEDQUERY_LLM_PROVIDER; default "mock"), created once."""
+    global _llm_provider
+    if _llm_provider is None:
+        try:
+            _llm_provider = create_provider()
+        except ValueError as error:
+            raise HTTPException(
+                status_code=503,
+                detail="The LLM provider is not configured correctly. Set MEDQUERY_LLM_PROVIDER "
+                "to mock or claude, then restart the backend.",
+            ) from error
+    return _llm_provider
+
+
+def open_knowledge_base(load: Callable[[], KnowledgeBase]) -> KnowledgeBase:
+    """Load the knowledge base, turning data problems into safe 503 responses."""
+    try:
+        return load()
+    except KnowledgeBaseNotFoundError as error:
+        raise HTTPException(status_code=503, detail=DATA_NOT_FOUND) from error
+    except (KnowledgeBaseError, IndexFormatError, OSError) as error:
+        logger.error("Research data failed its checks: %s", error)
+        raise HTTPException(
+            status_code=503,
+            detail="The research data did not pass its integrity checks, so retrieval is "
+            "unavailable. The server log says which check failed.",
+        ) from error
 
 
 @app.get("/api/health")
@@ -122,6 +283,14 @@ def dataset_summary(data_dir: Annotated[Path, Depends(get_data_dir)]) -> Dataset
     )
 
 
+@app.get("/api/llm", response_model=LLMConfigResponse)
+def llm_config(
+    provider: Annotated[LLMProvider, Depends(get_llm_provider)],
+) -> LLMConfigResponse:
+    """Which LLM answers questions, so the frontend can show the right privacy notice."""
+    return LLMConfigResponse(provider=provider.name, model=provider.model)
+
+
 @app.post("/api/retrieve", response_model=RetrieveResponse)
 def retrieve_chunks(
     request: RetrieveRequest,
@@ -129,18 +298,7 @@ def retrieve_chunks(
     embedder: Annotated[QueryEmbedder, Depends(get_query_embedder)],
 ) -> RetrieveResponse:
     """The research chunks most similar to a question, using one embedding model."""
-    try:
-        knowledge_base = load()
-    except KnowledgeBaseNotFoundError as error:
-        raise HTTPException(status_code=503, detail=DATA_NOT_FOUND) from error
-    except (KnowledgeBaseError, IndexFormatError, OSError) as error:
-        logger.error("Research data failed its checks: %s", error)
-        raise HTTPException(
-            status_code=503,
-            detail="The research data did not pass its integrity checks, so retrieval is "
-            "unavailable. The server log says which check failed.",
-        ) from error
-
+    knowledge_base = open_knowledge_base(load)
     try:
         result = retrieve(
             request.question,
@@ -175,3 +333,115 @@ def retrieve_chunks(
             search_ms=round(result.search_ms, 3),
         ),
     )
+
+
+@app.post("/api/answer", response_model=AnswerResponse)
+def answer(
+    request: AnswerRequest,
+    load: Annotated[Callable[[], KnowledgeBase], Depends(get_knowledge_base_loader)],
+    embedder: Annotated[QueryEmbedder, Depends(get_query_embedder)],
+    provider: Annotated[LLMProvider, Depends(get_llm_provider)],
+) -> AnswerResponse:
+    """A grounded answer: retrieve chunks, then ask the configured LLM to answer from them.
+
+    Every citation is checked against the chunk it cites; invalid ones are dropped and counted.
+    """
+    knowledge_base = open_knowledge_base(load)
+    try:
+        outcome = answer_question(
+            request.question,
+            request.model,
+            request.top_k,
+            knowledge_base=knowledge_base,
+            embedder=embedder,
+            provider=provider,
+        )
+    except (QueryModelUnavailableError, LLMUnavailableError) as error:
+        raise HTTPException(status_code=503, detail=str(error)) from error
+
+    retrieval, context, result = outcome.retrieval, outcome.context, outcome.result
+    check = outcome.citations
+    return AnswerResponse(
+        question=retrieval.question,
+        embedding_model=retrieval.model.name,
+        top_k=retrieval.top_k,
+        llm=LLMInfo(provider=result.provider, model=result.model, fell_back=result.fell_back),
+        parts=[
+            AnswerPartModel(
+                text=part.text,
+                citations=[
+                    ProviderCitation(
+                        document_index=c.document_index,
+                        source_label=context.source_for(c.document_index).label,
+                        cited_text=c.cited_text,
+                        start_char=c.start_char,
+                        end_char=c.end_char,
+                    )
+                    for c in part.citations
+                ],
+            )
+            for part in check.parts
+        ],
+        grounding=outcome.grounding,
+        sentences=[
+            AnswerSentenceModel(start=s.start, end=s.end, supported=s.supported)
+            for s in check.sentence_list
+        ],
+        citation_status="checked",
+        citation_check=CitationCheckModel(
+            total=check.total,
+            valid=check.valid,
+            dropped=DroppedByReason(**check.dropped_by_reason),
+            validity_rate=check.validity_rate,
+            sentences=check.sentences,
+            supported_sentences=check.supported_sentences,
+            grounding_coverage=check.grounding_coverage,
+        ),
+        dropped_citations=[
+            DroppedCitationModel(
+                part_index=d.part_index,
+                document_index=_int_or_none(d.citation.document_index),
+                cited_text=d.citation.cited_text
+                if isinstance(d.citation.cited_text, str)
+                else None,
+                start_char=_int_or_none(d.citation.start_char),
+                end_char=_int_or_none(d.citation.end_char),
+                reason=d.reason,
+            )
+            for d in check.dropped
+        ],
+        sources=[
+            AnswerSource(
+                label=source.label,
+                rank=source.rank,
+                score=source.score,
+                source_file=source.source_file,
+                chunk_id=source.chunk_id,
+                article_title=source.article_title,
+                chunk_count=source.chunk_count,
+                title=document.title,
+                text=document.text,
+            )
+            for source, document in zip(context.sources, context.request.documents, strict=True)
+        ],
+        stop_reason=result.stop_reason,
+        refused=result.refused,
+        refusal_category=result.refusal_category,
+        usage=TokenUsageModel(**vars(result.usage)),
+        cost=CostModel(
+            estimated_usd=outcome.cost.usd,
+            prices_checked_on=outcome.cost.checked_on,
+            note=outcome.cost.note,
+        ),
+        timings=AnswerTimings(
+            model_load_ms=round(retrieval.model_load_ms, 3),
+            embedding_ms=round(retrieval.embedding_ms, 3),
+            search_ms=round(retrieval.search_ms, 3),
+            generation_ms=round(result.latency_ms, 3),
+            total_ms=round(outcome.total_ms, 3),
+        ),
+    )
+
+
+def _int_or_none(value: object) -> int | None:
+    return value if isinstance(value, int) and not isinstance(value, bool) else None

@@ -23,7 +23,6 @@ export const PAGES = {
     label: 'Chat',
     purpose:
       'Ask questions about the NHS documents and receive answers with citations to the retrieved evidence.',
-    plannedIn: 'Part 3',
   },
   retrieval: {
     path: '/retrieval',

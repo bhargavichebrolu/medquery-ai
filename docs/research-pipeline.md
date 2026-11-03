@@ -8,6 +8,9 @@ Checked on 2 November 2026 against the archive, with `backend/tests/test_researc
 (see [How to re-run the checks](#how-to-re-run-the-checks)). The archive was only read; nothing
 in `Healthcare_RAG/` was run, rebuilt or changed.
 
+See also: [Embeddings, retrieval, LLMs and RAG](llm-and-rag.md), which explains how these
+pieces fit together and records the design for Part 3.
+
 ## How to read this document
 
 Each statement comes from one of three sources:

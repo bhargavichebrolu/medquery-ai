@@ -15,3 +15,8 @@ export function rankLabel(reciprocalRank: number): string {
   }
   return ORDINALS[Math.round(1 / reciprocalRank) - 1]
 }
+
+// A duration: milliseconds below one second, seconds above.
+export function formatMs(ms: number): string {
+  return ms >= 1000 ? `${(ms / 1000).toFixed(1)} s` : `${ms.toFixed(1)} ms`
+}
